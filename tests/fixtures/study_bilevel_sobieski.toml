@@ -1,0 +1,201 @@
+[disciplines.sobieski_aerodynamics]
+inputs = ["x_2", "x_shared", "y_12", "y_32"]
+outputs = ["y_2", "y_21", "y_23", "y_24", "g_2"]
+
+[disciplines.sobieski_structure]
+inputs = ["x_1", "y_21", "y_31", "x_shared"]
+outputs = ["y_1", "y_12", "y_13", "y_14", "g_1"]
+
+[disciplines.sobieski_propulsion]
+inputs = ["x_3", "x_shared", "y_23"]
+outputs = ["y_3", "y_31", "y_32", "y_34", "g_3"]
+
+[disciplines.sobieski_mission]
+inputs = ["x_shared", "y_14", "y_24", "y_34"]
+outputs = ["y_4"]
+
+[scenarios.scenario_structure]
+design_variables = ["x_1"]
+disciplines = ["sobieski_structure", "sobieski_mission"]
+scenario_type = "MDO"
+
+[scenarios.scenario_structure.objective]
+variable = "y_4"
+
+[[scenarios.scenario_structure.constraints]]
+variable = "g_1"
+operator = "<"
+value = 0.0
+
+[scenarios.scenario_propulsion]
+design_variables = ["x_3"]
+disciplines = ["sobieski_propulsion", "sobieski_mission"]
+scenario_type = "MDO"
+
+[scenarios.scenario_propulsion.objective]
+variable = "y_4"
+
+[[scenarios.scenario_propulsion.constraints]]
+variable = "g_3"
+operator = "<"
+value = 0.0
+
+[scenarios.scenario_aero]
+design_variables = ["x_2"]
+disciplines = ["sobieski_aerodynamics", "sobieski_mission"]
+scenario_type = "MDO"
+
+[scenarios.scenario_aero.objective]
+variable = "y_4"
+
+[[scenarios.scenario_aero.constraints]]
+variable = "g_2"
+operator = "<"
+value = 0.0
+
+[scenarios.scenario_system]
+design_variables = ["x_shared"]
+disciplines = ["scenario_aero", "scenario_structure", "scenario_propulsion", "sobieski_mission"]
+scenario_type = "MDO"
+
+[scenarios.scenario_system.objective]
+variable = "y_4"
+
+[[scenarios.scenario_system.constraints]]
+variable = "g_1"
+operator = "<"
+value = 0.0
+
+[[scenarios.scenario_system.constraints]]
+variable = "g_2"
+operator = "<"
+value = 0.0
+
+[[scenarios.scenario_system.constraints]]
+variable = "g_3"
+operator = "<"
+value = 0.0
+
+[[variables]]
+name = "x_1"
+unit = ""
+data_type = "float"
+dimension = 1
+default_value = 1.0
+
+[[variables]]
+name = "x_2"
+unit = ""
+data_type = "float"
+dimension = 1
+default_value = 1.0
+
+[[variables]]
+name = "x_3"
+unit = ""
+data_type = "float"
+dimension = 1
+default_value = 1.0
+
+[[variables]]
+name = "x_shared"
+unit = ""
+data_type = "float"
+dimension = 1
+default_value = 1.0
+
+[[variables]]
+name = "y_1"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_12"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_13"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_14"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_2"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_21"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_23"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_24"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_3"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_31"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_32"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_34"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "y_4"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "g_1"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "g_2"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "g_3"
+unit = ""
+data_type = "float"
+dimension = 1

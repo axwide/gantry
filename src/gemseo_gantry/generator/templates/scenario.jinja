@@ -1,0 +1,98 @@
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from gemseo import create_scenario
+from gemseo.algos.design_space import DesignSpace
+from gemseo.core.discipline import Discipline
+from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
+from gemseo.scenarios.base_scenario import BaseScenario
+
+from .variables import Var
+
+DESIGN_SPACE_DIR = Path(__file__).parent
+DESIGN_SPACE_PATH = DESIGN_SPACE_DIR / "design_space.csv"
+
+
+@dataclass
+class {{ scenario_name }}Disciplines:
+{%- for discipline in plain_disciplines %}
+    {{ discipline }}: Discipline
+{%- else %}
+    pass
+{%- endfor %}
+
+{% if sub_scenarios %}
+@dataclass
+class {{ scenario_name }}SubScenarios:
+{%- for sub in sub_scenarios %}
+    {{ sub }}: BaseScenario
+{%- endfor %}
+
+{% endif %}
+def construct_{{ scenario_name }}(
+    *,
+    disciplines: {{ scenario_name }}Disciplines,
+{%- if sub_scenarios %}
+    sub_scenarios: {{ scenario_name }}SubScenarios,
+{%- endif %}
+    design_space_path: Path = DESIGN_SPACE_PATH,
+    formulation_settings_model: (BaseFormulationSettings | None) = None,
+    **formulation_settings: Any,
+) -> BaseScenario:
+    # ------------------------ from the ProblemFormulation ----------------------- #
+    scenario_name = "{{ scenario_name }}"
+    scenario_type = "{{ scenario_type }}"
+    maximize_objective = {{ maximize_objective }}
+
+    design_variables = [
+{%- for dv in design_variables %}
+        Var.{{ dv|upper }},
+{%- endfor %}
+    ]
+
+    objective = Var.{{ objective|upper }}
+
+    discipline_list = [
+{%- for discipline in plain_disciplines %}
+        disciplines.{{ discipline }},
+{%- endfor %}
+{%- for sub in sub_scenarios %}
+        sub_scenarios.{{ sub }},
+{%- endfor %}
+    ]
+    # ------------------------------------ end ----------------------------------- #
+
+    # --------------------------- This part is generic --------------------------- #
+    design_space = DesignSpace.from_csv(
+        file_path=design_space_path,
+        delimiter=",",
+    ).filter(design_variables, copy=True)
+
+    scenario = create_scenario(
+        disciplines=discipline_list,{% if sub_scenarios %}  # pyright: ignore[reportArgumentType]  # BaseScenario is a Discipline subclass at runtime; GEMSEO ships no stubs{% endif %}
+        objective_name=objective,
+        design_space=design_space,
+        name=scenario_name,
+        scenario_type=scenario_type,
+        maximize_objective=maximize_objective,
+        formulation_settings_model=formulation_settings_model,
+        **formulation_settings,
+    )
+    # ------------------------------------ end ----------------------------------- #
+
+    # ------------------------ from the ProblemFormulation ----------------------- #
+{%- for constraint in constraints %}
+    scenario.add_constraint(
+        Var.{{ constraint.var|upper }},
+        constraint_type="{{ constraint.type }}",  # pyright: ignore[reportArgumentType]  # GEMSEO accepts string literals at runtime
+        value={{ constraint.value }},
+        positive={{ constraint.positive }},
+    )
+{%- endfor %}
+{%- for observable in observables %}
+    scenario.add_observable(Var.{{ observable|upper }})
+{%- endfor %}
+    # ------------------------------------ end ----------------------------------- #
+
+    return scenario

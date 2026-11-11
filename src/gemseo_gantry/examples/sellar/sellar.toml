@@ -1,0 +1,98 @@
+# Sellar - canonical multidiscipline MDO benchmark
+# Reference: https://gemseo.readthedocs.io/en/stable/generated/examples/mdo/plot_sellar.html
+
+# -- Disciplines ---------------------------------------------------------------
+
+[disciplines.sellar_1]
+inputs  = ["x_1", "z", "y_2"]
+outputs = ["y_1"]
+
+[disciplines.sellar_2]
+inputs  = ["z", "y_1"]
+outputs = ["y_2"]
+
+# SellarSystem computes the objective and constraint functions from the
+# coupling outputs; it is the third discipline in GEMSEO's canonical formulation.
+[disciplines.sellar_system]
+inputs  = ["x_1", "z", "y_1", "y_2"]
+outputs = ["obj", "c_1", "c_2"]
+
+# -- Scenario ------------------------------------------------------------------
+
+[scenarios.sellar]
+design_variables = ["x_1", "z"]
+disciplines      = ["sellar_1", "sellar_2", "sellar_system"]
+scenario_type    = "MDO"
+
+[scenarios.sellar.objective]
+variable = "obj"
+maximize = false
+
+[[scenarios.sellar.constraints]]
+variable = "c_1"
+operator = "<"
+value    = 0.0
+
+[[scenarios.sellar.constraints]]
+variable = "c_2"
+operator = "<"
+value    = 0.0
+
+# -- Variables -----------------------------------------------------------------
+
+[[variables]]
+name               = "x_1"
+unit               = "-"
+data_type          = "float"
+dimension          = 1
+description        = "Local design variable"
+lower_bound        = 0.0
+upper_bound        = 10.0
+default_value      = 1.0
+
+[[variables]]
+name               = "z"
+unit               = "-"
+data_type          = "float"
+dimension          = 2
+description        = "Shared design vector [z_1, z_2]; z_1 in [-10, 10], z_2 in [0, 10]"
+lower_bound        = [-10.0, 0.0]
+upper_bound        = 10.0
+default_value      = [4.0, 3.0]
+
+[[variables]]
+name           = "y_1"
+unit           = "-"
+data_type      = "float"
+dimension      = 1
+description    = "Coupling variable: output of sellar_1, input of sellar_2 and sellar_system"
+default_value  = 0.0
+
+[[variables]]
+name           = "y_2"
+unit           = "-"
+data_type      = "float"
+dimension      = 1
+description    = "Coupling variable: output of sellar_2, input of sellar_1 and sellar_system"
+default_value  = 0.0
+
+[[variables]]
+name        = "obj"
+unit        = "-"
+data_type   = "float"
+dimension   = 1
+description = "Objective: x_1^2 + z[1] + y_1^2 + exp(-y_2)"
+
+[[variables]]
+name        = "c_1"
+unit        = "-"
+data_type   = "float"
+dimension   = 1
+description = "Constraint 1: 3.16 - y_1^2 (must be <= 0, i.e. y_1^2 >= 3.16)"
+
+[[variables]]
+name        = "c_2"
+unit        = "-"
+data_type   = "float"
+dimension   = 1
+description = "Constraint 2: y_2 - 24.0 (must be <= 0)"

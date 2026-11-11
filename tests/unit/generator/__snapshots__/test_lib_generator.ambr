@@ -1,0 +1,974 @@
+# serializer version: 1
+# name: test_generate_design_space
+  '''
+  name,lower_bound,value,upper_bound,type
+  h,200.0,300.0,450.0,float
+  a_panel,0.1,1.0,5.0,float
+  p_tx,0.5,5.0,50.0,float
+  
+  '''
+# ---
+# name: test_generate_discipline_bases[Drag]
+  '''
+  from abc import ABC
+  
+  from gemseo.core.discipline import Discipline
+  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  
+  from .Drag_grammar import (
+      DragInputGrammar,
+      DragOutputGrammar,
+  )
+  from .Drag_io import DISCIPLINE_NAME
+  
+  
+  class DragBase(Discipline, ABC):
+      def __init__(self):
+          super().__init__(DISCIPLINE_NAME)
+          self.input_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_input", model=DragInputGrammar
+          )
+          self.output_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_output", model=DragOutputGrammar
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_bases[Link]
+  '''
+  from abc import ABC
+  
+  from gemseo.core.discipline import Discipline
+  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  
+  from .Link_grammar import (
+      LinkInputGrammar,
+      LinkOutputGrammar,
+  )
+  from .Link_io import DISCIPLINE_NAME
+  
+  
+  class LinkBase(Discipline, ABC):
+      def __init__(self):
+          super().__init__(DISCIPLINE_NAME)
+          self.input_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_input", model=LinkInputGrammar
+          )
+          self.output_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_output", model=LinkOutputGrammar
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_bases[Mass]
+  '''
+  from abc import ABC
+  
+  from gemseo.core.discipline import Discipline
+  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  
+  from .Mass_grammar import (
+      MassInputGrammar,
+      MassOutputGrammar,
+  )
+  from .Mass_io import DISCIPLINE_NAME
+  
+  
+  class MassBase(Discipline, ABC):
+      def __init__(self):
+          super().__init__(DISCIPLINE_NAME)
+          self.input_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_input", model=MassInputGrammar
+          )
+          self.output_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_output", model=MassOutputGrammar
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_bases[Power]
+  '''
+  from abc import ABC
+  
+  from gemseo.core.discipline import Discipline
+  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  
+  from .Power_grammar import (
+      PowerInputGrammar,
+      PowerOutputGrammar,
+  )
+  from .Power_io import DISCIPLINE_NAME
+  
+  
+  class PowerBase(Discipline, ABC):
+      def __init__(self):
+          super().__init__(DISCIPLINE_NAME)
+          self.input_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_input", model=PowerInputGrammar
+          )
+          self.output_grammar = PydanticGrammar(
+              f"{DISCIPLINE_NAME}_output", model=PowerOutputGrammar
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_grammars[Drag]
+  '''
+  import numpy as np
+  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from pydantic import BaseModel, Field
+  
+  
+  class DragInputGrammar(BaseModel):
+      a_bus: NDArrayPydantic = Field(
+          description="Bus frontal area [m2]", default_factory=lambda: np.array([0.1])
+      )
+  
+      a_panel: NDArrayPydantic = Field(
+          description="Solar array area [m2]", default_factory=lambda: np.array([1.0])
+      )
+  
+      cd: NDArrayPydantic = Field(
+          description="Satellite drag coefficient [-]",
+          default_factory=lambda: np.array([2.2]),
+      )
+  
+      f_thruster: NDArrayPydantic = Field(
+          description="Max thruster thrust (5 mN electric propulsion) [N]",
+          default_factory=lambda: np.array([0.005]),
+      )
+  
+      h: NDArrayPydantic = Field(
+          description="Orbital altitude (VLEO range) [km]",
+          default_factory=lambda: np.array([300.0]),
+      )
+  
+  
+  class DragOutputGrammar(BaseModel):
+      duty_cycle: NDArrayPydantic = Field(
+          description="Thruster duty cycle; Drag output consumed by Power [-]"
+      )
+  
+  '''
+# ---
+# name: test_generate_discipline_grammars[Link]
+  '''
+  import numpy as np
+  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from pydantic import BaseModel, Field
+  
+  
+  class LinkInputGrammar(BaseModel):
+      d_min: NDArrayPydantic = Field(
+          description="Required data volume per ground pass [Gbit]",
+          default_factory=lambda: np.array([0.05]),
+      )
+  
+      eb_n0_req: NDArrayPydantic = Field(
+          description="Required Eb/N0 (QPSK with rate-1/2 coding) [dB]",
+          default_factory=lambda: np.array([6.0]),
+      )
+  
+      f_carrier: NDArrayPydantic = Field(
+          description="Downlink carrier frequency (Ka-band) [GHz]",
+          default_factory=lambda: np.array([26.0]),
+      )
+  
+      g_rx: NDArrayPydantic = Field(
+          description="Ground station receive antenna gain [dBi]",
+          default_factory=lambda: np.array([20.0]),
+      )
+  
+      g_tx: NDArrayPydantic = Field(
+          description="Satellite transmit antenna gain [dBi]",
+          default_factory=lambda: np.array([0.0]),
+      )
+  
+      h: NDArrayPydantic = Field(
+          description="Orbital altitude (VLEO range) [km]",
+          default_factory=lambda: np.array([300.0]),
+      )
+  
+      p_tx: NDArrayPydantic = Field(
+          description="Transmit power [W]", default_factory=lambda: np.array([5.0])
+      )
+  
+      t_pass: NDArrayPydantic = Field(
+          description="Ground station contact time per pass [min]",
+          default_factory=lambda: np.array([10.0]),
+      )
+  
+      t_sys: NDArrayPydantic = Field(
+          description="Ground station system noise temperature [K]",
+          default_factory=lambda: np.array([290.0]),
+      )
+  
+  
+  class LinkOutputGrammar(BaseModel):
+      link_margin: NDArrayPydantic = Field(
+          description="Link closure margin; constraint variable [dB]"
+      )
+  
+  '''
+# ---
+# name: test_generate_discipline_grammars[Mass]
+  '''
+  import numpy as np
+  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from pydantic import BaseModel, Field
+  
+  
+  class MassInputGrammar(BaseModel):
+      a_panel: NDArrayPydantic = Field(
+          description="Solar array area [m2]", default_factory=lambda: np.array([1.0])
+      )
+  
+      m_bus: NDArrayPydantic = Field(
+          description="Bus dry mass (excluding solar array) [kg]",
+          default_factory=lambda: np.array([50.0]),
+      )
+  
+      specific_mass_panel: NDArrayPydantic = Field(
+          description="Solar array areal mass density [kg/m2]",
+          default_factory=lambda: np.array([1.5]),
+      )
+  
+  
+  class MassOutputGrammar(BaseModel):
+      m_total: NDArrayPydantic = Field(
+          description="Total satellite mass; objective variable [kg]"
+      )
+  
+  '''
+# ---
+# name: test_generate_discipline_grammars[Power]
+  '''
+  import numpy as np
+  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from pydantic import BaseModel, Field
+  
+  
+  class PowerInputGrammar(BaseModel):
+      a_panel: NDArrayPydantic = Field(
+          description="Solar array area [m2]", default_factory=lambda: np.array([1.0])
+      )
+  
+      duty_cycle: NDArrayPydantic = Field(
+          description="Thruster duty cycle; Drag output consumed by Power [-]"
+      )
+  
+      eta_panel: NDArrayPydantic = Field(
+          description="Solar cell efficiency [-]",
+          default_factory=lambda: np.array([0.28]),
+      )
+  
+      f_sun: NDArrayPydantic = Field(
+          description="Representative sunlit fraction per orbit [-]",
+          default_factory=lambda: np.array([0.6]),
+      )
+  
+      i_solar: NDArrayPydantic = Field(
+          description="Solar irradiance [W/m2]",
+          default_factory=lambda: np.array([1361.0]),
+      )
+  
+      p_payload: NDArrayPydantic = Field(
+          description="Payload power draw [W]", default_factory=lambda: np.array([30.0])
+      )
+  
+      p_thruster: NDArrayPydantic = Field(
+          description="Thruster input power at full thrust [W]",
+          default_factory=lambda: np.array([200.0]),
+      )
+  
+      p_tx: NDArrayPydantic = Field(
+          description="Transmit power [W]", default_factory=lambda: np.array([5.0])
+      )
+  
+  
+  class PowerOutputGrammar(BaseModel):
+      power_margin: NDArrayPydantic = Field(
+          description="Power balance margin (generated minus consumed); constraint variable [W]"
+      )
+  
+  '''
+# ---
+# name: test_generate_discipline_io[Drag]
+  '''
+  from __future__ import annotations
+  
+  from dataclasses import dataclass
+  from pathlib import Path
+  
+  import numpy as np
+  from numpy.typing import NDArray
+  
+  from .variables import Var
+  
+  GRAMMAR_DIR = Path(__file__).parent
+  DISCIPLINE_NAME = "Drag"
+  
+  
+  @dataclass
+  class DragInputs:
+      h: NDArray[np.floating]
+      a_panel: NDArray[np.floating]
+      cd: NDArray[np.floating]
+      a_bus: NDArray[np.floating]
+      f_thruster: NDArray[np.floating]
+  
+      @classmethod
+      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> DragInputs:
+          return cls(
+              h=d[Var.H],
+              a_panel=d[Var.A_PANEL],
+              cd=d[Var.CD],
+              a_bus=d[Var.A_BUS],
+              f_thruster=d[Var.F_THRUSTER],
+          )
+  
+  
+  class DragOutputs(dict[str, NDArray[np.floating]]):
+      def __init__(
+          self,
+          duty_cycle: NDArray[np.floating],
+      ):
+          super().__init__(
+              {
+                  Var.DUTY_CYCLE: duty_cycle,
+              }
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_io[Link]
+  '''
+  from __future__ import annotations
+  
+  from dataclasses import dataclass
+  from pathlib import Path
+  
+  import numpy as np
+  from numpy.typing import NDArray
+  
+  from .variables import Var
+  
+  GRAMMAR_DIR = Path(__file__).parent
+  DISCIPLINE_NAME = "Link"
+  
+  
+  @dataclass
+  class LinkInputs:
+      h: NDArray[np.floating]
+      p_tx: NDArray[np.floating]
+      d_min: NDArray[np.floating]
+      g_rx: NDArray[np.floating]
+      t_sys: NDArray[np.floating]
+      t_pass: NDArray[np.floating]
+      f_carrier: NDArray[np.floating]
+      g_tx: NDArray[np.floating]
+      eb_n0_req: NDArray[np.floating]
+  
+      @classmethod
+      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> LinkInputs:
+          return cls(
+              h=d[Var.H],
+              p_tx=d[Var.P_TX],
+              d_min=d[Var.D_MIN],
+              g_rx=d[Var.G_RX],
+              t_sys=d[Var.T_SYS],
+              t_pass=d[Var.T_PASS],
+              f_carrier=d[Var.F_CARRIER],
+              g_tx=d[Var.G_TX],
+              eb_n0_req=d[Var.EB_N0_REQ],
+          )
+  
+  
+  class LinkOutputs(dict[str, NDArray[np.floating]]):
+      def __init__(
+          self,
+          link_margin: NDArray[np.floating],
+      ):
+          super().__init__(
+              {
+                  Var.LINK_MARGIN: link_margin,
+              }
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_io[Mass]
+  '''
+  from __future__ import annotations
+  
+  from dataclasses import dataclass
+  from pathlib import Path
+  
+  import numpy as np
+  from numpy.typing import NDArray
+  
+  from .variables import Var
+  
+  GRAMMAR_DIR = Path(__file__).parent
+  DISCIPLINE_NAME = "Mass"
+  
+  
+  @dataclass
+  class MassInputs:
+      a_panel: NDArray[np.floating]
+      m_bus: NDArray[np.floating]
+      specific_mass_panel: NDArray[np.floating]
+  
+      @classmethod
+      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> MassInputs:
+          return cls(
+              a_panel=d[Var.A_PANEL],
+              m_bus=d[Var.M_BUS],
+              specific_mass_panel=d[Var.SPECIFIC_MASS_PANEL],
+          )
+  
+  
+  class MassOutputs(dict[str, NDArray[np.floating]]):
+      def __init__(
+          self,
+          m_total: NDArray[np.floating],
+      ):
+          super().__init__(
+              {
+                  Var.M_TOTAL: m_total,
+              }
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_io[Power]
+  '''
+  from __future__ import annotations
+  
+  from dataclasses import dataclass
+  from pathlib import Path
+  
+  import numpy as np
+  from numpy.typing import NDArray
+  
+  from .variables import Var
+  
+  GRAMMAR_DIR = Path(__file__).parent
+  DISCIPLINE_NAME = "Power"
+  
+  
+  @dataclass
+  class PowerInputs:
+      a_panel: NDArray[np.floating]
+      duty_cycle: NDArray[np.floating]
+      p_tx: NDArray[np.floating]
+      f_sun: NDArray[np.floating]
+      p_payload: NDArray[np.floating]
+      eta_panel: NDArray[np.floating]
+      i_solar: NDArray[np.floating]
+      p_thruster: NDArray[np.floating]
+  
+      @classmethod
+      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> PowerInputs:
+          return cls(
+              a_panel=d[Var.A_PANEL],
+              duty_cycle=d[Var.DUTY_CYCLE],
+              p_tx=d[Var.P_TX],
+              f_sun=d[Var.F_SUN],
+              p_payload=d[Var.P_PAYLOAD],
+              eta_panel=d[Var.ETA_PANEL],
+              i_solar=d[Var.I_SOLAR],
+              p_thruster=d[Var.P_THRUSTER],
+          )
+  
+  
+  class PowerOutputs(dict[str, NDArray[np.floating]]):
+      def __init__(
+          self,
+          power_margin: NDArray[np.floating],
+      ):
+          super().__init__(
+              {
+                  Var.POWER_MARGIN: power_margin,
+              }
+          )
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold[Drag]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Drag_base import DragBase
+  from generated.Drag_io import (
+      DragInputs,
+      DragOutputs,
+  )
+  
+  
+  class Drag(DragBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = DragInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_bus
+          inputs.a_panel
+          inputs.cd
+          inputs.f_thruster
+          inputs.h
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = DragOutputs(
+              duty_cycle=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold[Link]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Link_base import LinkBase
+  from generated.Link_io import (
+      LinkInputs,
+      LinkOutputs,
+  )
+  
+  
+  class Link(LinkBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = LinkInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.d_min
+          inputs.eb_n0_req
+          inputs.f_carrier
+          inputs.g_rx
+          inputs.g_tx
+          inputs.h
+          inputs.p_tx
+          inputs.t_pass
+          inputs.t_sys
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = LinkOutputs(
+              link_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold[Mass]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Mass_base import MassBase
+  from generated.Mass_io import (
+      MassInputs,
+      MassOutputs,
+  )
+  
+  
+  class Mass(MassBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = MassInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.m_bus
+          inputs.specific_mass_panel
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = MassOutputs(
+              m_total=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold[Power]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Power_base import PowerBase
+  from generated.Power_io import (
+      PowerInputs,
+      PowerOutputs,
+  )
+  
+  
+  class Power(PowerBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = PowerInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.duty_cycle
+          inputs.eta_panel
+          inputs.f_sun
+          inputs.i_solar
+          inputs.p_payload
+          inputs.p_thruster
+          inputs.p_tx
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = PowerOutputs(
+              power_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold_runnable[Drag]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Drag_base import DragBase
+  from generated.Drag_io import (
+      DragInputs,
+      DragOutputs,
+  )
+  
+  
+  class Drag(DragBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = DragInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_bus
+          inputs.a_panel
+          inputs.cd
+          inputs.f_thruster
+          inputs.h
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = DragOutputs(
+              duty_cycle=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold_runnable[Link]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Link_base import LinkBase
+  from generated.Link_io import (
+      LinkInputs,
+      LinkOutputs,
+  )
+  
+  
+  class Link(LinkBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = LinkInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.d_min
+          inputs.eb_n0_req
+          inputs.f_carrier
+          inputs.g_rx
+          inputs.g_tx
+          inputs.h
+          inputs.p_tx
+          inputs.t_pass
+          inputs.t_sys
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = LinkOutputs(
+              link_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold_runnable[Mass]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Mass_base import MassBase
+  from generated.Mass_io import (
+      MassInputs,
+      MassOutputs,
+  )
+  
+  
+  class Mass(MassBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = MassInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.m_bus
+          inputs.specific_mass_panel
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = MassOutputs(
+              m_total=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_discipline_scaffold_runnable[Power]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.Power_base import PowerBase
+  from generated.Power_io import (
+      PowerInputs,
+      PowerOutputs,
+  )
+  
+  
+  class Power(PowerBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = PowerInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.duty_cycle
+          inputs.eta_panel
+          inputs.f_sun
+          inputs.i_solar
+          inputs.p_payload
+          inputs.p_thruster
+          inputs.p_tx
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = PowerOutputs(
+              power_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_scenario
+  '''
+  from dataclasses import dataclass
+  from pathlib import Path
+  from typing import Any
+  
+  from gemseo import create_scenario
+  from gemseo.algos.design_space import DesignSpace
+  from gemseo.core.discipline import Discipline
+  from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
+  from gemseo.scenarios.base_scenario import BaseScenario
+  
+  from .variables import Var
+  
+  DESIGN_SPACE_DIR = Path(__file__).parent
+  DESIGN_SPACE_PATH = DESIGN_SPACE_DIR / "design_space.csv"
+  
+  
+  @dataclass
+  class VleoDisciplines:
+      Drag: Discipline
+      Link: Discipline
+      Mass: Discipline
+      Power: Discipline
+  
+  
+  def construct_Vleo(
+      *,
+      disciplines: VleoDisciplines,
+      design_space_path: Path = DESIGN_SPACE_PATH,
+      formulation_settings_model: BaseFormulationSettings | None = None,
+      **formulation_settings: Any,
+  ) -> BaseScenario:
+      # ------------------------ from the ProblemFormulation ----------------------- #
+      scenario_name = "Vleo"
+      scenario_type = "MDO"
+      maximize_objective = False
+  
+      design_variables = [
+          Var.A_PANEL,
+          Var.H,
+          Var.P_TX,
+      ]
+  
+      objective = Var.M_TOTAL
+  
+      discipline_list = [
+          disciplines.Drag,
+          disciplines.Link,
+          disciplines.Mass,
+          disciplines.Power,
+      ]
+      # ------------------------------------ end ----------------------------------- #
+  
+      # --------------------------- This part is generic --------------------------- #
+      design_space = DesignSpace.from_csv(
+          file_path=design_space_path,
+          delimiter=",",
+      ).filter(design_variables, copy=True)
+  
+      scenario = create_scenario(
+          disciplines=discipline_list,
+          objective_name=objective,
+          design_space=design_space,
+          name=scenario_name,
+          scenario_type=scenario_type,
+          maximize_objective=maximize_objective,
+          formulation_settings_model=formulation_settings_model,
+          **formulation_settings,
+      )
+      # ------------------------------------ end ----------------------------------- #
+  
+      # ------------------------ from the ProblemFormulation ----------------------- #
+      scenario.add_constraint(
+          Var.LINK_MARGIN,
+          constraint_type="ineq",  # pyright: ignore[reportArgumentType]  # GEMSEO accepts string literals at runtime
+          value=0.0,
+          positive=True,
+      )
+      scenario.add_constraint(
+          Var.DUTY_CYCLE,
+          constraint_type="ineq",  # pyright: ignore[reportArgumentType]  # GEMSEO accepts string literals at runtime
+          value=1.0,
+          positive=False,
+      )
+      scenario.add_constraint(
+          Var.POWER_MARGIN,
+          constraint_type="ineq",  # pyright: ignore[reportArgumentType]  # GEMSEO accepts string literals at runtime
+          value=0.0,
+          positive=True,
+      )
+      # ------------------------------------ end ----------------------------------- #
+  
+      return scenario
+  
+  '''
+# ---
+# name: test_generate_variables
+  '''
+  from enum import StrEnum
+  
+  
+  class Var(StrEnum):
+      """All problem variables. Values are the gemseo grammar names."""
+  
+      H = "h"
+      """Orbital altitude (VLEO range) [km]"""
+  
+      A_PANEL = "a_panel"
+      """Solar array area [m2]"""
+  
+      P_TX = "p_tx"
+      """Transmit power [W]"""
+  
+      DUTY_CYCLE = "duty_cycle"
+      """Thruster duty cycle; Drag output consumed by Power [-]"""
+  
+      LINK_MARGIN = "link_margin"
+      """Link closure margin; constraint variable [dB]"""
+  
+      POWER_MARGIN = "power_margin"
+      """Power balance margin (generated minus consumed); constraint variable [W]"""
+  
+      M_TOTAL = "m_total"
+      """Total satellite mass; objective variable [kg]"""
+  
+      D_MIN = "d_min"
+      """Required data volume per ground pass [Gbit]"""
+  
+      M_BUS = "m_bus"
+      """Bus dry mass (excluding solar array) [kg]"""
+  
+      SPECIFIC_MASS_PANEL = "specific_mass_panel"
+      """Solar array areal mass density [kg/m2]"""
+  
+      F_SUN = "f_sun"
+      """Representative sunlit fraction per orbit [-]"""
+  
+      P_PAYLOAD = "p_payload"
+      """Payload power draw [W]"""
+  
+      ETA_PANEL = "eta_panel"
+      """Solar cell efficiency [-]"""
+  
+      I_SOLAR = "i_solar"
+      """Solar irradiance [W/m2]"""
+  
+      CD = "cd"
+      """Satellite drag coefficient [-]"""
+  
+      A_BUS = "a_bus"
+      """Bus frontal area [m2]"""
+  
+      F_THRUSTER = "f_thruster"
+      """Max thruster thrust (5 mN electric propulsion) [N]"""
+  
+      P_THRUSTER = "p_thruster"
+      """Thruster input power at full thrust [W]"""
+  
+      G_RX = "g_rx"
+      """Ground station receive antenna gain [dBi]"""
+  
+      T_SYS = "t_sys"
+      """Ground station system noise temperature [K]"""
+  
+      T_PASS = "t_pass"
+      """Ground station contact time per pass [min]"""
+  
+      F_CARRIER = "f_carrier"
+      """Downlink carrier frequency (Ka-band) [GHz]"""
+  
+      G_TX = "g_tx"
+      """Satellite transmit antenna gain [dBi]"""
+  
+      EB_N0_REQ = "eb_n0_req"
+      """Required Eb/N0 (QPSK with rate-1/2 coding) [dB]"""
+  
+  '''
+# ---

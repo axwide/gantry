@@ -1,0 +1,243 @@
+# Sobieski SSBJ - canonical bilevel MDO benchmark.
+# Variable names, dimensions and bounds mirror GEMSEO's SobieskiProblem so the
+# generated lib/ can be driven by GEMSEO's real Sobieski disciplines.
+
+# -- Disciplines ---------------------------------------------------------------
+
+[disciplines.structure]
+inputs  = ["x_1", "x_shared", "y_21", "y_31", "c_0", "c_1", "c_2"]
+outputs = ["y_1", "y_11", "y_12", "y_14", "g_1"]
+
+[disciplines.aerodynamics]
+inputs  = ["x_2", "x_shared", "y_12", "y_32", "c_4"]
+outputs = ["y_2", "y_21", "y_23", "y_24", "g_2"]
+
+[disciplines.propulsion]
+inputs  = ["x_3", "x_shared", "y_23", "c_3"]
+outputs = ["y_3", "y_31", "y_32", "y_34", "g_3"]
+
+[disciplines.mission]
+inputs  = ["x_shared", "y_14", "y_24", "y_34"]
+outputs = ["y_4"]
+
+# -- Sub-scenarios ---------------------------------------------------------------
+
+[scenarios.structure_scenario]
+design_variables = ["x_1"]
+disciplines      = ["structure"]
+scenario_type    = "MDO"
+objective        = { variable = "y_11", maximize = true }
+constraints      = [{ variable = "g_1", operator = "<", value = 0.0 }]
+
+[scenarios.aerodynamics_scenario]
+design_variables = ["x_2"]
+disciplines      = ["aerodynamics"]
+scenario_type    = "MDO"
+objective        = { variable = "y_24", maximize = true }
+constraints      = [{ variable = "g_2", operator = "<", value = 0.0 }]
+
+[scenarios.propulsion_scenario]
+design_variables = ["x_3"]
+disciplines      = ["propulsion"]
+scenario_type    = "MDO"
+objective        = { variable = "y_34" }
+constraints      = [{ variable = "g_3", operator = "<", value = 0.0 }]
+
+# -- System (root) scenario -----------------------------------------------------
+
+[scenarios.system_scenario]
+design_variables = ["x_shared"]
+disciplines      = [
+    "mission",
+    "structure_scenario",
+    "aerodynamics_scenario",
+    "propulsion_scenario",
+]
+scenario_type    = "MDO"
+formulation      = "BiLevelBCD"
+objective        = { variable = "y_4", maximize = true }
+
+# -- Variables -----------------------------------------------------------------
+
+[[variables]]
+name = "x_1"
+data_type = "float"
+dimension = 2
+lower_bound = [0.1, 0.75]
+upper_bound = [0.4, 1.25]
+default_value = [0.25, 1.0]
+unit = ""
+
+[[variables]]
+name = "x_2"
+data_type = "float"
+dimension = 1
+lower_bound = 0.75
+upper_bound = 1.25
+default_value = 1.0
+unit = ""
+
+[[variables]]
+name = "x_3"
+data_type = "float"
+dimension = 1
+lower_bound = 0.1
+upper_bound = 1.0
+default_value = 0.5
+unit = ""
+
+[[variables]]
+name = "x_shared"
+data_type = "float"
+dimension = 6
+lower_bound = [0.01, 30000.0, 1.4, 2.5, 40.0, 500.0]
+upper_bound = [0.09, 60000.0, 1.8, 8.5, 70.0, 1500.0]
+default_value = [0.05, 45000.0, 1.6, 5.5, 55.0, 1000.0]
+unit = ""
+
+[[variables]]
+name = "y_1"
+data_type = "float"
+dimension = 3
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_11"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_12"
+data_type = "float"
+dimension = 2
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_14"
+data_type = "float"
+dimension = 2
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_2"
+data_type = "float"
+dimension = 3
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_21"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_23"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_24"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_3"
+data_type = "float"
+dimension = 3
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_31"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_32"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_34"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "y_4"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "g_1"
+data_type = "float"
+dimension = 7
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "g_2"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "g_3"
+data_type = "float"
+dimension = 4
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "c_0"
+data_type = "float"
+dimension = 1
+default_value = 2000.0
+unit = ""
+
+[[variables]]
+name = "c_1"
+data_type = "float"
+dimension = 1
+default_value = 25000.0
+unit = ""
+
+[[variables]]
+name = "c_2"
+data_type = "float"
+dimension = 1
+default_value = 6.0
+unit = ""
+
+[[variables]]
+name = "c_3"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""
+
+[[variables]]
+name = "c_4"
+data_type = "float"
+dimension = 1
+default_value = 0.0
+unit = ""

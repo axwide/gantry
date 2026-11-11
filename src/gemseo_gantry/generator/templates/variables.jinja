@@ -1,0 +1,11 @@
+from enum import StrEnum
+
+
+class Var(StrEnum):
+    """All problem variables. Values are the gemseo grammar names."""
+{% for var in variables %}
+    {{ var.name|upper }} = "{{ var.name }}"
+    {%- if var.description %}
+    """{{ var.description }}"""
+    {%- endif %}
+{% endfor %}

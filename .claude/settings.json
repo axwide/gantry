@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run ruff format \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null; uv run ruff check --extend-select I --fix \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null; true"
+          },
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_TOOL_INPUT_FILE_PATH\" == *.py ]]; then uv run basedpyright src/; fi; true"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+[disciplines.discipline_1]
+inputs = ["x", "z"]
+outputs = ["y"]
+
+[disciplines.discipline_2]
+inputs = ["y"]
+outputs = ["w"]
+
+[[variables]]
+name = "x"
+unit = "m"
+data_type = "float"
+dimension = 1
+description = "Design var x"
+lower_bound = 0.0
+upper_bound = 10.0
+default_value = 5.0
+
+[[variables]]
+name = "y"
+unit = "m"
+data_type = "float"
+dimension = 1
+description = "Coupling var y"
+default_value = 1.0
+
+[[variables]]
+name = "z"
+unit = "m"
+data_type = "float"
+dimension = 1
+description = "Config var z"
+default_value = 1.0
+
+[[variables]]
+name = "w"
+unit = "m"
+data_type = "float"
+dimension = 1
+description = "Output var w"
+default_value = 2.0
+
+[scenarios.scenario_1]
+design_variables = ["x"]
+disciplines = ["discipline_1", "discipline_2"]
+scenario_type = "MDO"
+
+[scenarios.scenario_1.objective]
+variable = "y"
+
+[[scenarios.scenario_1.constraints]]
+variable = "w"
+operator = "<"
+value = 0.0

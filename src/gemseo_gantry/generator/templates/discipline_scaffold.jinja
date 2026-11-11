@@ -1,0 +1,37 @@
+import numpy as np
+from gemseo.typing import StrKeyMapping
+
+from {{ lib_package }}.{{ discipline_name }}_base import {{ discipline_name }}Base
+from {{ lib_package }}.{{ discipline_name }}_io import (
+    {{ discipline_name }}Inputs,
+    {{ discipline_name }}Outputs,
+)
+
+
+class {{ discipline_name }}({{ discipline_name }}Base):
+    def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+        inputs = {{ discipline_name }}Inputs.from_dict(input_data)
+
+        # -------------------- Start of your analysis computation -------------------- #
+        # Access input variables via the 'inputs' object, e.g.:
+{%- for input in inputs %}
+        inputs.{{ input }}
+{%- endfor %}
+
+        # Replace with actual computation
+{%- for output in outputs %}
+        out{{ loop.index }} = np.zeros({{ output.dimension }})
+{%- endfor %}
+
+        # Gather outputs into the 'outputs' object
+        outputs = {{ discipline_name }}Outputs(
+{%- for output in outputs %}
+            {{ output.name }}=out{{ loop.index }},
+{%- endfor %}
+        )
+        # --------------------- End of your analysis computation --------------------- #
+{% if runnable %}
+        return outputs
+{%- else %}
+        raise NotImplementedError
+{%- endif %}

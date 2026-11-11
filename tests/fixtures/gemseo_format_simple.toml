@@ -1,0 +1,37 @@
+[disciplines.discipline_1]
+inputs = ["a", "b"]
+outputs = ["c", "d"]
+
+[disciplines.discipline_2]
+inputs = ["c", "d"]
+outputs = ["a", "e"]
+
+[[variables]]
+name = "a"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "b"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "c"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "d"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "e"
+unit = ""
+data_type = "float"
+dimension = 1

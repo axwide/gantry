@@ -1,0 +1,14 @@
+# Dependencies
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Outputs
+*.log
+*.db
+dist/
+build/
+
+__snapshots__/
+*.lock

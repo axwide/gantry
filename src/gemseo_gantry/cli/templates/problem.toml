@@ -1,0 +1,78 @@
+#:schema ./schema/problem.schema.json
+# Problem definition for <your-project>
+# ---------------------------------------------------------------
+# Run `gantry build problem.toml`    to regenerate lib/.
+# Run `gantry scaffold problem.toml` to seed write-once stubs.
+# ---------------------------------------------------------------
+
+# -- Disciplines -------------------------------------------------
+# Each entry maps a discipline name to its inputs and outputs.
+# Names become Python identifiers (PascalCase class names).
+# Add more [disciplines.<name>] blocks as needed.
+
+[disciplines.my_discipline]
+inputs  = ["x", "y"]
+outputs = ["z"]
+
+[disciplines.my_other_discipline]
+inputs  = ["z"]
+outputs = ["result"]
+
+# -- Scenarios ---------------------------------------------------
+# scenario_type is "MDO" (optimisation) or "DOE" (design of experiments).
+
+[scenarios.my_scenario]
+design_variables = ["x", "y"]
+disciplines      = ["my_discipline", "my_other_discipline"]
+scenario_type    = "MDO"
+# Observables are non-objective/constraint variables recorded during the run
+# so they are available for post-processing. Must be a discipline output.
+observables      = ["z"]
+
+[scenarios.my_scenario.objective]
+variable = "result"
+maximize = false
+
+# Uncomment to add inequality constraints:
+# [[scenarios.my_scenario.constraints]]
+# variable = "z"
+# operator = ">"   # "<", ">", or "="
+# value    = 0.0
+
+# -- Variables ---------------------------------------------------
+# Required. Every variable referenced by a discipline or scenario
+# must be declared here with its metadata and bounds.
+
+[[variables]]
+name               = "x"
+unit               = "-"
+data_type          = "float"
+dimension          = 1
+description        = "First design variable"
+lower_bound        = 0.0
+upper_bound        = 10.0
+default_value      = 1.0
+
+[[variables]]
+name               = "y"
+unit               = "-"
+data_type          = "float"
+dimension          = 1
+description        = "Second design variable"
+lower_bound        = 0.0
+upper_bound        = 10.0
+default_value      = 1.0
+
+[[variables]]
+name          = "z"
+unit          = "-"
+data_type     = "float"
+dimension     = 1
+description   = "Coupling variable: output of my_discipline, input of my_other_discipline"
+
+[[variables]]
+name          = "result"
+unit          = "-"
+data_type     = "float"
+dimension     = 1
+description   = "Objective variable (output of my_other_discipline)"

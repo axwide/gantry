@@ -1,0 +1,21 @@
+from abc import ABC
+
+from gemseo.core.discipline import Discipline
+from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+
+from .{{ discipline_name }}_grammar import (
+    {{ discipline_name }}InputGrammar,
+    {{ discipline_name }}OutputGrammar,
+)
+from .{{ discipline_name }}_io import DISCIPLINE_NAME
+
+
+class {{ discipline_name }}Base(Discipline, ABC):
+    def __init__(self):
+        super().__init__(DISCIPLINE_NAME)
+        self.input_grammar = PydanticGrammar(
+            f"{DISCIPLINE_NAME}_input", model={{ discipline_name }}InputGrammar
+        )
+        self.output_grammar = PydanticGrammar(
+            f"{DISCIPLINE_NAME}_output", model={{ discipline_name }}OutputGrammar
+        )

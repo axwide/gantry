@@ -1,0 +1,58 @@
+from pathlib import Path
+
+{% for imp in formulation_imports -%}
+from {{ imp.module }} import {{ imp.cls }}
+{% endfor -%}
+from gemseo.settings.opt import NLOPT_COBYLA_Settings, SLSQP_Settings
+{% if root_is_doe -%}
+from gemseo.settings.doe import PYDOE_LHS_Settings
+{% endif %}
+{% for sc in scenarios -%}
+from {{ lib_package }}.{{ sc.name }} import (
+    {{ sc.name }}Disciplines,
+{%- if sc.sub_scenarios %}
+    {{ sc.name }}SubScenarios,
+{%- endif %}
+    construct_{{ sc.name }},
+)
+{% endfor -%}
+{% for disc in disciplines -%}
+from {{ (discipline_package ~ ".") if discipline_package else "" }}{{ disc }}_scaffold import {{ disc }}
+{% endfor %}
+
+def execute_{{ root_name }}():
+{%- for sc in scenarios %}
+    {{ sc.var }} = construct_{{ sc.name }}(
+        disciplines={{ sc.name }}Disciplines(
+{%- for d in sc.plain_disciplines %}
+            {{ d }}={{ d }}(),
+{%- endfor %}
+        ),
+{%- if sc.sub_scenarios %}
+        sub_scenarios={{ sc.name }}SubScenarios(
+{%- for sub in sc.sub_scenarios %}
+            {{ sub.field }}={{ sub.var }},
+{%- endfor %}
+        ),
+{%- endif %}
+        formulation_settings_model={{ sc.settings_cls }}(),  # placeholder parameters
+    )
+{%- if not sc.is_root %}
+    {{ sc.var }}.set_algorithm(SLSQP_Settings(max_iter=3))  # placeholder parameters
+{%- endif %}
+{% endfor %}
+{%- if root_is_doe %}
+    {{ root_var }}.execute(PYDOE_LHS_Settings(n_samples=3))  # placeholder parameters
+{%- else %}
+    {{ root_var }}.execute(NLOPT_COBYLA_Settings(max_iter=3))  # placeholder parameters
+{%- endif %}
+    return {{ root_var }}
+
+
+def main() -> None:
+    scenario = execute_{{ root_name }}()
+    scenario.save_optimization_history(Path(__file__).parent / "{{ root_name }}.h5")
+
+
+if __name__ == "__main__":
+    main()

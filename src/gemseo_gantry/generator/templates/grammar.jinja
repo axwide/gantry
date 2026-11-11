@@ -1,0 +1,26 @@
+{% if needs_numpy %}
+import numpy as np
+{% endif %}from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+from pydantic import BaseModel{% if needs_field %}, Field{% endif %}
+
+
+class {{ discipline_name }}InputGrammar(BaseModel):
+{%- if input_fields %}
+{%- for field in input_fields %}
+{% if not loop.first %}
+{% endif %}    {{ field.name }}: {{ field.grammar_type }}{% if field.default_values is not none and field.description %} = Field(description="{{ field.description }}", default_factory=lambda: np.array([{{ field.default_values|join(', ') }}])){% elif field.default_values is not none %} = Field(default_factory=lambda: np.array([{{ field.default_values|join(', ') }}])){% elif field.description %} = Field(description="{{ field.description }}"){% endif %}
+{%- endfor %}
+{%- else %}
+    pass
+{%- endif %}
+
+
+class {{ discipline_name }}OutputGrammar(BaseModel):
+{%- if output_fields %}
+{%- for field in output_fields %}
+{% if not loop.first %}
+{% endif %}    {{ field.name }}: {{ field.grammar_type }}{% if field.description %} = Field(description="{{ field.description }}"){% endif %}
+{%- endfor %}
+{%- else %}
+    pass
+{%- endif %}

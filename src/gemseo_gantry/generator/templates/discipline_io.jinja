@@ -1,0 +1,36 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+{% if needs_any %}
+from typing import Any
+{% endif %}
+import numpy as np
+from numpy.typing import NDArray
+
+from .variables import Var
+
+GRAMMAR_DIR = Path(__file__).parent
+DISCIPLINE_NAME = "{{ discipline_name }}"
+
+
+@dataclass
+class {{ discipline_name }}Inputs:
+{%- for field in input_fields %}
+    {{ field.name }}: NDArray[{{ field.np_type }}]
+{%- endfor %}
+
+    @classmethod
+    def from_dict(cls, d: dict[str, NDArray[{{ inputs_dict_type }}]]) -> {{ discipline_name }}Inputs:
+        return cls(
+{%- for field in input_fields %}
+            {{ field.name }}=d[Var.{{ field.name.upper() }}],
+{%- endfor %}
+        )
+
+
+class {{ discipline_name }}Outputs(dict[str, NDArray[{{ outputs_dict_type }}]]):
+    def __init__(
+        self,{% for field in output_fields %}{{ field.name }}: NDArray[{{ field.np_type }}],{% endfor %}
+    ):
+        super().__init__({{ "{" }}{% for field in output_fields %}Var.{{ field.name.upper() }}: {{ field.name }},{% endfor %}{{ "}" }})

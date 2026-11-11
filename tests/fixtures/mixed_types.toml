@@ -1,0 +1,38 @@
+[disciplines.discipline_1]
+inputs = ["n", "x"]
+outputs = ["y"]
+
+[[variables]]
+name = "n"
+unit = ""
+data_type = "integer"
+dimension = 1
+description = "Discrete count n"
+lower_bound = 0
+upper_bound = 10
+default_value = 1
+
+[[variables]]
+name = "x"
+unit = "m"
+data_type = "float"
+dimension = 1
+description = "Continuous var x"
+lower_bound = 0.0
+upper_bound = 10.0
+default_value = 5.0
+
+[[variables]]
+name = "y"
+unit = "m"
+data_type = "float"
+dimension = 1
+description = "Output var y"
+
+[scenarios.scenario_1]
+design_variables = ["n", "x"]
+disciplines = ["discipline_1"]
+scenario_type = "DOE"
+
+[scenarios.scenario_1.objective]
+variable = "y"

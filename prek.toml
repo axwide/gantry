@@ -1,0 +1,43 @@
+default_install_hook_types = ["pre-commit", "commit-msg"]
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "ruff-check"
+name = "ruff check"
+language = "system"
+entry = "uv run ruff check --extend-select I --fix"
+types = ["python"]
+
+[[repos.hooks]]
+id = "ruff-format"
+name = "ruff format"
+language = "system"
+entry = "uv run ruff format"
+types = ["python"]
+
+[[repos.hooks]]
+id = "basedpyright"
+name = "basedpyright"
+language = "system"
+entry = "uv run basedpyright src/"
+pass_filenames = false
+files = "\\.py$"
+
+[[repos.hooks]]
+id = "unit-tests"
+name = "unit tests"
+language = "system"
+entry = "uv run pytest tests/unit/ -q --tb=short --no-cov"
+pass_filenames = false
+files = "\\.py$"
+
+[[repos]]
+repo = "https://github.com/compilerla/conventional-pre-commit"
+rev = "v4.4.0"
+
+[[repos.hooks]]
+id = "conventional-pre-commit"
+stages = ["commit-msg"]
+args = []

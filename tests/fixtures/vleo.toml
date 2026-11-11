@@ -1,0 +1,239 @@
+[disciplines.drag]
+inputs  = ["h", "A_panel", "Cd", "A_bus", "F_thruster"]
+outputs = ["duty_cycle"]
+
+[disciplines.link]
+inputs  = ["h", "P_tx", "D_min", "G_rx", "T_sys", "T_pass", "f_carrier", "G_tx", "Eb_N0_req"]
+outputs = ["link_margin"]
+
+[disciplines.power]
+inputs  = ["A_panel", "duty_cycle", "P_tx", "f_sun", "P_payload", "eta_panel", "I_solar", "P_thruster"]
+outputs = ["power_margin"]
+
+[disciplines.mass]
+inputs  = ["A_panel", "M_bus", "specific_mass_panel"]
+outputs = ["M_total"]
+
+[scenarios.vleo]
+design_variables = ["h", "A_panel", "P_tx"]
+disciplines      = ["drag", "link", "power", "mass"]
+scenario_type    = "MDO"
+
+[scenarios.vleo.objective]
+variable = "M_total"
+maximize = false
+
+[[scenarios.vleo.constraints]]
+variable = "link_margin"
+operator = ">"
+value    = 0.0
+
+[[scenarios.vleo.constraints]]
+variable = "duty_cycle"
+operator = "<"
+value    = 1.0
+
+[[scenarios.vleo.constraints]]
+variable = "power_margin"
+operator = ">"
+value    = 0.0
+
+# -- Design variables ----------------------------------------------------------
+
+[[variables]]
+name             = "h"
+unit             = "km"
+data_type        = "float"
+dimension        = 1
+description      = "Orbital altitude (VLEO range)"
+lower_bound      = 200.0
+upper_bound      = 450.0
+default_value    = 300.0
+
+[[variables]]
+name             = "A_panel"
+unit             = "m2"
+data_type        = "float"
+dimension        = 1
+description      = "Solar array area"
+lower_bound      = 0.1
+upper_bound      = 5.0
+default_value    = 1.0
+
+[[variables]]
+name             = "P_tx"
+unit             = "W"
+data_type        = "float"
+dimension        = 1
+description      = "Transmit power"
+lower_bound      = 0.5
+upper_bound      = 50.0
+default_value    = 5.0
+
+# -- Coupling / intermediate variables -----------------------------------------
+
+[[variables]]
+name          = "duty_cycle"
+unit          = "-"
+data_type     = "float"
+dimension     = 1
+description   = "Thruster duty cycle; Drag output consumed by Power"
+
+[[variables]]
+name          = "link_margin"
+unit          = "dB"
+data_type     = "float"
+dimension     = 1
+description   = "Link closure margin; constraint variable"
+
+[[variables]]
+name          = "power_margin"
+unit          = "W"
+data_type     = "float"
+dimension     = 1
+description   = "Power balance margin (generated minus consumed); constraint variable"
+
+[[variables]]
+name          = "M_total"
+unit          = "kg"
+data_type     = "float"
+dimension     = 1
+description   = "Total satellite mass; objective variable"
+
+# -- Constants -----------------------------------------------------------------
+
+[[variables]]
+name          = "D_min"
+unit          = "Gbit"
+data_type     = "float"
+dimension     = 1
+description   = "Required data volume per ground pass"
+default_value = 0.05
+
+[[variables]]
+name          = "M_bus"
+unit          = "kg"
+data_type     = "float"
+dimension     = 1
+description   = "Bus dry mass (excluding solar array)"
+default_value = 50.0
+
+[[variables]]
+name          = "specific_mass_panel"
+unit          = "kg/m2"
+data_type     = "float"
+dimension     = 1
+description   = "Solar array areal mass density"
+default_value = 1.5
+
+[[variables]]
+name          = "f_sun"
+unit          = "-"
+data_type     = "float"
+dimension     = 1
+description   = "Representative sunlit fraction per orbit"
+default_value = 0.60
+
+[[variables]]
+name          = "P_payload"
+unit          = "W"
+data_type     = "float"
+dimension     = 1
+description   = "Payload power draw"
+default_value = 30.0
+
+[[variables]]
+name          = "eta_panel"
+unit          = "-"
+data_type     = "float"
+dimension     = 1
+description   = "Solar cell efficiency"
+default_value = 0.28
+
+[[variables]]
+name          = "I_solar"
+unit          = "W/m2"
+data_type     = "float"
+dimension     = 1
+description   = "Solar irradiance"
+default_value = 1361.0
+
+[[variables]]
+name          = "Cd"
+unit          = "-"
+data_type     = "float"
+dimension     = 1
+description   = "Satellite drag coefficient"
+default_value = 2.2
+
+[[variables]]
+name          = "A_bus"
+unit          = "m2"
+data_type     = "float"
+dimension     = 1
+description   = "Bus frontal area"
+default_value = 0.1
+
+[[variables]]
+name          = "F_thruster"
+unit          = "N"
+data_type     = "float"
+dimension     = 1
+description   = "Max thruster thrust (5 mN electric propulsion)"
+default_value = 0.005
+
+[[variables]]
+name          = "P_thruster"
+unit          = "W"
+data_type     = "float"
+dimension     = 1
+description   = "Thruster input power at full thrust"
+default_value = 200.0
+
+[[variables]]
+name          = "G_rx"
+unit          = "dBi"
+data_type     = "float"
+dimension     = 1
+description   = "Ground station receive antenna gain"
+default_value = 20.0
+
+[[variables]]
+name          = "T_sys"
+unit          = "K"
+data_type     = "float"
+dimension     = 1
+description   = "Ground station system noise temperature"
+default_value = 290.0
+
+[[variables]]
+name          = "T_pass"
+unit          = "min"
+data_type     = "float"
+dimension     = 1
+description   = "Ground station contact time per pass"
+default_value = 10.0
+
+[[variables]]
+name          = "f_carrier"
+unit          = "GHz"
+data_type     = "float"
+dimension     = 1
+description   = "Downlink carrier frequency (Ka-band)"
+default_value = 26.0
+
+[[variables]]
+name          = "G_tx"
+unit          = "dBi"
+data_type     = "float"
+dimension     = 1
+description   = "Satellite transmit antenna gain"
+default_value = 0.0
+
+[[variables]]
+name          = "Eb_N0_req"
+unit          = "dB"
+data_type     = "float"
+dimension     = 1
+description   = "Required Eb/N0 (QPSK with rate-1/2 coding)"
+default_value = 6.0

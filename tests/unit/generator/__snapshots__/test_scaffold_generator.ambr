@@ -1,0 +1,360 @@
+# serializer version: 1
+# name: test_generate_disciplines[Drag]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Drag_base import DragBase
+  from generated.lib.Drag_io import (
+      DragInputs,
+      DragOutputs,
+  )
+  
+  
+  class Drag(DragBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = DragInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_bus
+          inputs.a_panel
+          inputs.cd
+          inputs.f_thruster
+          inputs.h
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = DragOutputs(
+              duty_cycle=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_disciplines[Link]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Link_base import LinkBase
+  from generated.lib.Link_io import (
+      LinkInputs,
+      LinkOutputs,
+  )
+  
+  
+  class Link(LinkBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = LinkInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.d_min
+          inputs.eb_n0_req
+          inputs.f_carrier
+          inputs.g_rx
+          inputs.g_tx
+          inputs.h
+          inputs.p_tx
+          inputs.t_pass
+          inputs.t_sys
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = LinkOutputs(
+              link_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_disciplines[Mass]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Mass_base import MassBase
+  from generated.lib.Mass_io import (
+      MassInputs,
+      MassOutputs,
+  )
+  
+  
+  class Mass(MassBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = MassInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.m_bus
+          inputs.specific_mass_panel
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = MassOutputs(
+              m_total=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_disciplines[Power]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Power_base import PowerBase
+  from generated.lib.Power_io import (
+      PowerInputs,
+      PowerOutputs,
+  )
+  
+  
+  class Power(PowerBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = PowerInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.duty_cycle
+          inputs.eta_panel
+          inputs.f_sun
+          inputs.i_solar
+          inputs.p_payload
+          inputs.p_thruster
+          inputs.p_tx
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = PowerOutputs(
+              power_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          raise NotImplementedError
+  
+  '''
+# ---
+# name: test_generate_disciplines_runnable[Drag]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Drag_base import DragBase
+  from generated.lib.Drag_io import (
+      DragInputs,
+      DragOutputs,
+  )
+  
+  
+  class Drag(DragBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = DragInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_bus
+          inputs.a_panel
+          inputs.cd
+          inputs.f_thruster
+          inputs.h
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = DragOutputs(
+              duty_cycle=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_disciplines_runnable[Link]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Link_base import LinkBase
+  from generated.lib.Link_io import (
+      LinkInputs,
+      LinkOutputs,
+  )
+  
+  
+  class Link(LinkBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = LinkInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.d_min
+          inputs.eb_n0_req
+          inputs.f_carrier
+          inputs.g_rx
+          inputs.g_tx
+          inputs.h
+          inputs.p_tx
+          inputs.t_pass
+          inputs.t_sys
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = LinkOutputs(
+              link_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_disciplines_runnable[Mass]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Mass_base import MassBase
+  from generated.lib.Mass_io import (
+      MassInputs,
+      MassOutputs,
+  )
+  
+  
+  class Mass(MassBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = MassInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.m_bus
+          inputs.specific_mass_panel
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = MassOutputs(
+              m_total=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_disciplines_runnable[Power]
+  '''
+  import numpy as np
+  from gemseo.typing import StrKeyMapping
+  from generated.lib.Power_base import PowerBase
+  from generated.lib.Power_io import (
+      PowerInputs,
+      PowerOutputs,
+  )
+  
+  
+  class Power(PowerBase):
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+          inputs = PowerInputs.from_dict(input_data)
+  
+          # -------------------- Start of your analysis computation -------------------- #
+          # Access input variables via the 'inputs' object, e.g.:
+          inputs.a_panel
+          inputs.duty_cycle
+          inputs.eta_panel
+          inputs.f_sun
+          inputs.i_solar
+          inputs.p_payload
+          inputs.p_thruster
+          inputs.p_tx
+  
+          # Replace with actual computation
+          out1 = np.zeros(1)
+  
+          # Gather outputs into the 'outputs' object
+          outputs = PowerOutputs(
+              power_margin=out1,
+          )
+          # --------------------- End of your analysis computation --------------------- #
+  
+          return outputs
+  
+  '''
+# ---
+# name: test_generate_scenario_executor_snapshot
+  '''
+  from pathlib import Path
+  
+  from disciplines.Drag_scaffold import Drag
+  from disciplines.Link_scaffold import Link
+  from disciplines.Mass_scaffold import Mass
+  from disciplines.Power_scaffold import Power
+  from gemseo.formulations.mdf_settings import MDF_Settings
+  from gemseo.settings.opt import NLOPT_COBYLA_Settings, SLSQP_Settings
+  from generated.lib.Vleo import (
+      VleoDisciplines,
+      construct_Vleo,
+  )
+  
+  
+  def execute_Vleo():
+      vleo = construct_Vleo(
+          disciplines=VleoDisciplines(
+              Drag=Drag(),
+              Link=Link(),
+              Mass=Mass(),
+              Power=Power(),
+          ),
+          formulation_settings_model=MDF_Settings(),  # placeholder parameters
+      )
+  
+      vleo.execute(NLOPT_COBYLA_Settings(max_iter=3))  # placeholder parameters
+      return vleo
+  
+  
+  def main() -> None:
+      scenario = execute_Vleo()
+      scenario.save_optimization_history(Path(__file__).parent / "Vleo.h5")
+  
+  
+  if __name__ == "__main__":
+      main()
+  
+  '''
+# ---
+# name: test_generate_scenario_loader_snapshot
+  '''
+  from pathlib import Path
+  
+  from gemseo.algos.optimization_problem import OptimizationProblem
+  
+  problem = OptimizationProblem.from_hdf(Path(__file__).parent / "Vleo.h5")
+  dataset = problem.to_dataset()
+  
+  meta = dataset.misc["optimization_metadata"]
+  print("Objective:          ", meta.objective_name)
+  print("Optimum iteration:  ", meta.optimum_iteration)
+  print("Feasible iterations:", meta.feasible_iterations)
+  print("Constraints:        ", meta.output_names_to_constraint_names)
+  print("Solution:           ", problem.solution)
+  print()
+  print(dataset)
+  
+  '''
+# ---

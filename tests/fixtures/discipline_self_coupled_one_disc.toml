@@ -1,0 +1,47 @@
+[disciplines.discipline_1]
+inputs = ["a", "x"]
+outputs = ["a", "b", "f", "g"]
+
+[scenarios.scenario]
+design_variables = ["x"]
+disciplines = ["discipline_1"]
+scenario_type = "MDO"
+
+[scenarios.scenario.objective]
+variable = "f"
+
+[[scenarios.scenario.constraints]]
+variable = "g"
+operator = "<"
+value = 0.0
+
+[[variables]]
+name = "a"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "x"
+unit = ""
+data_type = "float"
+dimension = 1
+default_value = 1.0
+
+[[variables]]
+name = "b"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "f"
+unit = ""
+data_type = "float"
+dimension = 1
+
+[[variables]]
+name = "g"
+unit = ""
+data_type = "float"
+dimension = 1

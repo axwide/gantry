@@ -1,0 +1,285 @@
+{
+  "$defs": {
+    "DataType": {
+      "enum": [
+        "float",
+        "integer"
+      ],
+      "title": "DataType",
+      "type": "string"
+    },
+    "FormulationType": {
+      "enum": [
+        "MDF",
+        "IDF",
+        "BiLevel",
+        "BiLevelBCD"
+      ],
+      "title": "FormulationType",
+      "type": "string"
+    },
+    "TomlConstraint": {
+      "additionalProperties": false,
+      "properties": {
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        },
+        "operator": {
+          "default": "<",
+          "enum": [
+            "<",
+            ">",
+            "="
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "value": {
+          "default": 0.0,
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "variable"
+      ],
+      "title": "TomlConstraint",
+      "type": "object"
+    },
+    "TomlDiscipline": {
+      "additionalProperties": false,
+      "properties": {
+        "inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Outputs",
+          "type": "array"
+        }
+      },
+      "title": "TomlDiscipline",
+      "type": "object"
+    },
+    "TomlObjective": {
+      "additionalProperties": false,
+      "properties": {
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        },
+        "maximize": {
+          "default": false,
+          "title": "Maximize",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "variable"
+      ],
+      "title": "TomlObjective",
+      "type": "object"
+    },
+    "TomlScenario": {
+      "additionalProperties": false,
+      "properties": {
+        "design_variables": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Design Variables",
+          "type": "array"
+        },
+        "disciplines": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Disciplines",
+          "type": "array"
+        },
+        "scenario_type": {
+          "default": "MDO",
+          "enum": [
+            "DOE",
+            "MDO"
+          ],
+          "title": "Scenario Type",
+          "type": "string"
+        },
+        "formulation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FormulationType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "objective": {
+          "$ref": "#/$defs/TomlObjective"
+        },
+        "constraints": {
+          "items": {
+            "$ref": "#/$defs/TomlConstraint"
+          },
+          "title": "Constraints",
+          "type": "array"
+        },
+        "observables": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Observables",
+          "type": "array"
+        }
+      },
+      "required": [
+        "design_variables",
+        "disciplines",
+        "objective"
+      ],
+      "title": "TomlScenario",
+      "type": "object"
+    },
+    "TomlVariable": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "data_type": {
+          "$ref": "#/$defs/DataType"
+        },
+        "dimension": {
+          "title": "Dimension",
+          "type": "integer"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "lower_bound": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lower Bound"
+        },
+        "upper_bound": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upper Bound"
+        },
+        "default_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Default Value"
+        }
+      },
+      "required": [
+        "name",
+        "data_type",
+        "dimension"
+      ],
+      "title": "TomlVariable",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "disciplines": {
+      "additionalProperties": {
+        "$ref": "#/$defs/TomlDiscipline"
+      },
+      "title": "Disciplines",
+      "type": "object"
+    },
+    "variables": {
+      "items": {
+        "$ref": "#/$defs/TomlVariable"
+      },
+      "title": "Variables",
+      "type": "array"
+    },
+    "scenarios": {
+      "additionalProperties": {
+        "$ref": "#/$defs/TomlScenario"
+      },
+      "title": "Scenarios",
+      "type": "object"
+    }
+  },
+  "required": [
+    "disciplines"
+  ],
+  "title": "TomlProblemDefinition",
+  "type": "object",
+  "$comment": "Generated by `gantry schema` from the gemseo-gantry problem model. Do not edit by hand; regenerate with `gantry schema`."
+}
