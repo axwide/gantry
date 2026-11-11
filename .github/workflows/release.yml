@@ -2,7 +2,8 @@ name: Release
 
 # Publishes to PyPI via Trusted Publishing (OIDC) - no API token is stored.
 #   - push a tag `vX.Y.Z` matching `project.version` -> publish to PyPI
-#   - run manually (workflow_dispatch)              -> publish to TestPyPI
+#   - run manually (workflow_dispatch)              -> publish `X.Y.Z.devN` to TestPyPI,
+#                                                      where N is the workflow run number
 on:
   push:
     tags: ["v*"]
@@ -25,6 +26,12 @@ jobs:
             echo "::error::Tag ${GITHUB_REF_NAME} does not match project version ${version}"
             exit 1
           fi
+      # (Test)PyPI never accepts the same version twice, even after deletion,
+      # so give every dry run its own dev version. Only the build sees it;
+      # nothing is committed.
+      - name: Stamp a dev version for TestPyPI
+        if: ${{ github.ref_type != 'tag' }}
+        run: uv version --frozen "$(uv version --short).dev${GITHUB_RUN_NUMBER}"
       - run: uv build
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
