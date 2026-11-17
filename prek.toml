@@ -33,6 +33,15 @@ entry = "uv run pytest tests/unit/ -q --tb=short --no-cov"
 pass_filenames = false
 files = "\\.py$"
 
+# Fail when uv.lock doesn't match pyproject.toml (e.g. a hand-edited dependency).
+[[repos.hooks]]
+id = "uv-lock-check"
+name = "uv lock --check"
+language = "system"
+entry = "uv lock --check"
+pass_filenames = false
+files = "^(pyproject\\.toml|uv\\.lock)$"
+
 [[repos]]
 repo = "https://github.com/compilerla/conventional-pre-commit"
 rev = "v4.4.0"
