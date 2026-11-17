@@ -63,7 +63,6 @@ build-backend = "uv_build"
 addopts = ["--snapshot-warn-unused", "--import-mode=importlib", "--cov=src/gemseo_gantry", "--cov-fail-under=90"]
 filterwarnings = [
     "ignore::DeprecationWarning",
-    "ignore::SyntaxWarning:pyDOE3.doe_korobov",
 ]
 pythonpath = ["src"]
 markers = [
