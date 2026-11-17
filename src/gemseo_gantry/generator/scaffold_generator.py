@@ -1,5 +1,4 @@
 import re
-from dataclasses import dataclass
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -31,59 +30,6 @@ _FORMULATION_SETTINGS: dict[FormulationType, tuple[str, str]] = {
         "BiLevel_BCD_Settings",
     ),
 }
-
-
-@dataclass(frozen=True)
-class _Algorithm:
-    """A placeholder algorithm for the executor scaffold.
-
-    Only algorithms that ship with core GEMSEO (no extras) belong here, so the
-    generated executor runs on a plain ``pip install gemseo``.
-
-    Attributes:
-        module: Module to import the settings class from.
-        cls: The algorithm's settings class.
-        params: Placeholder keyword arguments, rendered verbatim.
-        needs_gradients: Whether the algorithm needs gradients. The executor
-            then approximates them by finite differences at scenario level.
-    """
-
-    module: str
-    cls: str
-    params: str
-    needs_gradients: bool = False
-
-
-# Gradient-based by default, with scenario-level finite differences. Discipline-
-# level approximations would be cheaper under MDF, but GEMSEO 6's chains don't
-# differentiate variables typed with NDArrayPydantic, which our grammars use.
-_SUB_SCENARIO_ALGORITHM = _Algorithm(
-    "gemseo.settings.opt", "SLSQP_Settings", "max_iter=3", needs_gradients=True
-)
-
-
-def _root_algorithm(*, is_doe: bool, has_sub_scenarios: bool) -> _Algorithm:
-    """Pick the placeholder algorithm for a root scenario.
-
-    Args:
-        is_doe: Whether the root is a DOE scenario.
-        has_sub_scenarios: Whether the root drives sub-scenarios.
-
-    Returns:
-        SciPy's LHS for a DOE, gradient-free COBYQA above sub-scenarios (whose
-        optima don't give reliable gradients), and SLSQP otherwise.
-    """
-    if is_doe:
-        return _Algorithm(
-            # Not gemseo.settings.doe: that module also imports the OpenTURNS
-            # settings, which fail without the openturns extra.
-            "gemseo.algos.doe.scipy.settings.lhs",
-            "LHS_Settings",
-            "n_samples=3",
-        )
-    if has_sub_scenarios:
-        return _Algorithm("gemseo.settings.opt", "COBYQA_Settings", "max_iter=3")
-    return _SUB_SCENARIO_ALGORITHM
 
 
 ALL_ARTIFACTS: frozenset[str] = frozenset({"disciplines", "executor", "loader"})
@@ -329,23 +275,11 @@ def generate_scenario_executor(
                 }
             )
 
-        root_algo = _root_algorithm(
-            is_doe=root.formulation_type == "DOE",
-            has_sub_scenarios=bool(problem.sub_scenario_names_of(root)),
-        )
-        algo_imports = {root_algo.cls: root_algo.module}
-        if len(ordered) > 1:
-            algo_imports[_SUB_SCENARIO_ALGORITHM.cls] = _SUB_SCENARIO_ALGORITHM.module
-
         content = template.render(
             root_name=root.name,
             root_var=_pascal_to_snake(root.name),
-            root_algo=root_algo,
-            sub_algo=_SUB_SCENARIO_ALGORITHM,
-            algo_imports=[
-                {"cls": cls, "module": module}
-                for cls, module in sorted(algo_imports.items())
-            ],
+            root_is_doe=root.formulation_type == "DOE",
+            root_has_sub_scenarios=bool(problem.sub_scenario_names_of(root)),
             scenarios=scenarios_ctx,
             disciplines=sorted(plain_disc_names),
             lib_package=lib_package,

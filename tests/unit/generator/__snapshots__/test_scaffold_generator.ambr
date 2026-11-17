@@ -323,9 +323,9 @@
           ),
           formulation_settings_model=MDF_Settings(),  # placeholder parameters
       )
-      # No analytic Jacobians yet: approximate the gradients by finite differences.
-      vleo.set_differentiation_method("finite_differences")
   
+      # No analytic Jacobians: approximate the gradients by finite differences.
+      vleo.set_differentiation_method("finite_differences")
       vleo.execute(SLSQP_Settings(max_iter=3))  # placeholder parameters
       return vleo
   

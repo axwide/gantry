@@ -3,9 +3,12 @@ from pathlib import Path
 {% for imp in formulation_imports -%}
 from {{ imp.module }} import {{ imp.cls }}
 {% endfor -%}
-{% for imp in algo_imports -%}
-from {{ imp.module }} import {{ imp.cls }}
-{% endfor %}
+{# Only algorithms that ship with core GEMSEO, so the scaffold runs without extras. -#}
+from gemseo.settings.opt import {% if root_has_sub_scenarios and not root_is_doe %}COBYQA_Settings, {% endif %}SLSQP_Settings
+{% if root_is_doe -%}
+{# Not gemseo.settings.doe: it also imports the OpenTURNS settings, which need that extra. -#}
+from gemseo.algos.doe.scipy.settings.lhs import LHS_Settings
+{% endif %}
 {% for sc in scenarios -%}
 from {{ lib_package }}.{{ sc.name }} import (
     {{ sc.name }}Disciplines,
@@ -37,15 +40,20 @@ def execute_{{ root_name }}():
         formulation_settings_model={{ sc.settings_cls }}(),  # placeholder parameters
     )
 {%- if not sc.is_root %}
-    # No analytic Jacobians yet: approximate the gradients by finite differences.
+    # No analytic Jacobians: approximate the gradients by finite differences.
     {{ sc.var }}.set_differentiation_method("finite_differences")
-    {{ sc.var }}.set_algorithm({{ sub_algo.cls }}({{ sub_algo.params }}))  # placeholder parameters
-{%- elif root_algo.needs_gradients %}
-    # No analytic Jacobians yet: approximate the gradients by finite differences.
-    {{ sc.var }}.set_differentiation_method("finite_differences")
+    {{ sc.var }}.set_algorithm(SLSQP_Settings(max_iter=3))  # placeholder parameters
 {%- endif %}
 {% endfor %}
-    {{ root_var }}.execute({{ root_algo.cls }}({{ root_algo.params }}))  # placeholder parameters
+{%- if root_is_doe %}
+    {{ root_var }}.execute(LHS_Settings(n_samples=3))  # placeholder parameters
+{%- elif root_has_sub_scenarios %}
+    {{ root_var }}.execute(COBYQA_Settings(max_iter=3))  # placeholder parameters
+{%- else %}
+    # No analytic Jacobians: approximate the gradients by finite differences.
+    {{ root_var }}.set_differentiation_method("finite_differences")
+    {{ root_var }}.execute(SLSQP_Settings(max_iter=3))  # placeholder parameters
+{%- endif %}
     return {{ root_var }}
 
 
