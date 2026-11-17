@@ -1,8 +1,9 @@
-name: Upstream GEMSEO
+name: Upstream dependencies
 
-# Early warning for GEMSEO releases. Regular CI tests the frozen uv.lock, so it
-# can't notice when a new GEMSEO breaks us. This runs the tests against the
-# newest GEMSEO that pyproject.toml allows, pre-releases included.
+# Early warning for dependency releases, GEMSEO above all. Regular CI tests the
+# frozen uv.lock, so it can't notice when a new release within our ranges
+# breaks us. This runs the tests against the newest stable versions that
+# pyproject.toml allows.
 # It never gates a PR. A red run means "look at this before users hit it".
 on:
   schedule:
@@ -22,11 +23,10 @@ jobs:
       - uses: astral-sh/setup-uv@18d369b23da25a81e9458561248e1aafff6a70fa # v10.3.1
         with:
           python-version: "3.13"
-      # Everything else at its locked version, so a failure points at GEMSEO.
-      - run: uv sync --locked
-      # Pre-releases are allowed for GEMSEO only; --upgrade-package keeps the
-      # rest of the environment as locked unless the new GEMSEO needs a change.
-      # Keep the specifier in sync with the GEMSEO requirement in pyproject.toml.
-      - run: uv pip install --prerelease allow --upgrade-package gemseo "gemseo[all]>=6.3.0,<7"
-      - run: uv run --no-sync python -c "from importlib.metadata import version; print('GEMSEO', version('gemseo'))"
+      # Ignore the pins in uv.lock and resolve fresh from pyproject.toml, as a
+      # new user's install would. uv records the result in this checkout's
+      # uv.lock (never committed), which keeps tests that shell out to
+      # `uv run` on the upgraded versions.
+      - run: uv sync --upgrade
+      - run: uv pip list
       - run: uv run --no-sync pytest --disable-warnings
