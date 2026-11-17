@@ -34,7 +34,7 @@ EXAMPLE = Example(
     run_note=(
         "This example ships a pre-configured executor: it builds the three "
         "disciplinary sub-scenarios with MDF and SLSQP, wraps them in a "
-        "BiLevelBCD system scenario, runs COBYLA, and saves the optimization "
+        "BiLevelBCD system scenario, runs COBYQA, and saves the optimization "
         "history to SystemScenario.h5 on completion."
     ),
 )

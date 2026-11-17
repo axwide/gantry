@@ -3,10 +3,9 @@ from pathlib import Path
 {% for imp in formulation_imports -%}
 from {{ imp.module }} import {{ imp.cls }}
 {% endfor -%}
-from gemseo.settings.opt import NLOPT_COBYLA_Settings, SLSQP_Settings
-{% if root_is_doe -%}
-from gemseo.settings.doe import PYDOE_LHS_Settings
-{% endif %}
+{% for imp in algo_imports -%}
+from {{ imp.module }} import {{ imp.cls }}
+{% endfor %}
 {% for sc in scenarios -%}
 from {{ lib_package }}.{{ sc.name }} import (
     {{ sc.name }}Disciplines,
@@ -38,14 +37,15 @@ def execute_{{ root_name }}():
         formulation_settings_model={{ sc.settings_cls }}(),  # placeholder parameters
     )
 {%- if not sc.is_root %}
-    {{ sc.var }}.set_algorithm(SLSQP_Settings(max_iter=3))  # placeholder parameters
+    # No analytic Jacobians yet: approximate the gradients by finite differences.
+    {{ sc.var }}.set_differentiation_method("finite_differences")
+    {{ sc.var }}.set_algorithm({{ sub_algo.cls }}({{ sub_algo.params }}))  # placeholder parameters
+{%- elif root_algo.needs_gradients %}
+    # No analytic Jacobians yet: approximate the gradients by finite differences.
+    {{ sc.var }}.set_differentiation_method("finite_differences")
 {%- endif %}
 {% endfor %}
-{%- if root_is_doe %}
-    {{ root_var }}.execute(PYDOE_LHS_Settings(n_samples=3))  # placeholder parameters
-{%- else %}
-    {{ root_var }}.execute(NLOPT_COBYLA_Settings(max_iter=3))  # placeholder parameters
-{%- endif %}
+    {{ root_var }}.execute({{ root_algo.cls }}({{ root_algo.params }}))  # placeholder parameters
     return {{ root_var }}
 
 
