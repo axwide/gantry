@@ -1,0 +1,36 @@
+# Version updates only. Security updates are switched on in the repo settings
+# and ignore `cooldown`, so vulnerability fixes aren't delayed.
+version: 2
+updates:
+  # Workflows pin actions to commit SHAs; Dependabot bumps the SHA and the
+  # version comment together.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Give a bad release time to get caught and pulled before we adopt it.
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci"
+
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # gemseo-gantry is a library: keep the lower bounds in pyproject.toml
+    # broad and only move uv.lock, which is what CI tests against.
+    versioning-strategy: "lockfile-only"
+    cooldown:
+      default-days: 7
+    groups:
+      # Minor and patch bumps land as one PR; majors get their own.
+      python:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "chore"
+      include: "scope"
