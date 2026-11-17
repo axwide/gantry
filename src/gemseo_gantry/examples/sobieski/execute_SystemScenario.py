@@ -7,7 +7,7 @@ from disciplines.Propulsion import Propulsion
 from disciplines.Structure import Structure
 from gemseo.formulations.bilevel_bcd_settings import BiLevel_BCD_Settings
 from gemseo.formulations.mdf_settings import MDF_Settings
-from gemseo.settings.opt import NLOPT_COBYLA_Settings, SLSQP_Settings
+from gemseo.settings.opt import COBYQA_Settings, SLSQP_Settings
 from lib.AerodynamicsScenario import (
     AerodynamicsScenarioDisciplines,
     construct_AerodynamicsScenario,
@@ -59,7 +59,7 @@ def execute_SystemScenario():
         formulation_settings_model=BiLevel_BCD_Settings(),
     )
     system.set_differentiation_method("finite_differences")
-    system.execute(algo_settings_model=NLOPT_COBYLA_Settings(max_iter=50))
+    system.execute(algo_settings_model=COBYQA_Settings(max_iter=50))
     return system
 
 

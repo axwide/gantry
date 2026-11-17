@@ -306,7 +306,7 @@
   from disciplines.Mass_scaffold import Mass
   from disciplines.Power_scaffold import Power
   from gemseo.formulations.mdf_settings import MDF_Settings
-  from gemseo.settings.opt import NLOPT_COBYLA_Settings, SLSQP_Settings
+  from gemseo.settings.opt import SLSQP_Settings
   from generated.lib.Vleo import (
       VleoDisciplines,
       construct_Vleo,
@@ -324,7 +324,9 @@
           formulation_settings_model=MDF_Settings(),  # placeholder parameters
       )
   
-      vleo.execute(NLOPT_COBYLA_Settings(max_iter=3))  # placeholder parameters
+      # No analytic Jacobians: approximate the gradients by finite differences.
+      vleo.set_differentiation_method("finite_differences")
+      vleo.execute(SLSQP_Settings(max_iter=3))  # placeholder parameters
       return vleo
   
   

@@ -5,7 +5,7 @@ from disciplines.Sellar1 import Sellar1
 from disciplines.Sellar2 import Sellar2
 from disciplines.SellarSystem import SellarSystem
 from gemseo.formulations.mdf_settings import MDF_Settings
-from gemseo.settings.opt import NLOPT_COBYLA_Settings
+from gemseo.settings.opt import SLSQP_Settings
 from lib.Sellar import SellarDisciplines, construct_Sellar
 
 
@@ -19,7 +19,8 @@ def execute_Sellar():
         formulation_settings_model=MDF_Settings(),
     )
 
-    scenario.execute(algo_settings_model=NLOPT_COBYLA_Settings(max_iter=100))
+    scenario.set_differentiation_method("finite_differences")
+    scenario.execute(algo_settings_model=SLSQP_Settings(max_iter=100))
     return scenario
 
 

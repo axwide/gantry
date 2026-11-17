@@ -26,7 +26,7 @@ EXAMPLE = Example(
     physics_note="For this example we've filled in the Sellar physics.",
     run_note=(
         "This example ships a pre-configured executor that overwrites the "
-        "scaffold default; it uses MDF formulation with COBYLA and saves the "
+        "scaffold default; it uses MDF formulation with SLSQP and saves the "
         "optimization history to Sellar.h5 on completion."
     ),
 )

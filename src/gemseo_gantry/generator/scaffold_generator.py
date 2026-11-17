@@ -279,6 +279,7 @@ def generate_scenario_executor(
             root_name=root.name,
             root_var=_pascal_to_snake(root.name),
             root_is_doe=root.formulation_type == "DOE",
+            root_has_sub_scenarios=bool(problem.sub_scenario_names_of(root)),
             scenarios=scenarios_ctx,
             disciplines=sorted(plain_disc_names),
             lib_package=lib_package,
