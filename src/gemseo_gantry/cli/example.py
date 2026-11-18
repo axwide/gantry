@@ -155,7 +155,8 @@ def example(
         from ..examples.runner import generate_example
 
         run = generate_example(ex, target)
-    except Exception as exc:  # pragma: no cover - defensive
+    # Report any failure in the CLI result, so --json always gets an envelope.
+    except Exception as exc:  # noqa: BLE001  # pragma: no cover - defensive
         diag = Diagnostic("internal", str(exc))
         envelope = CliResult(
             invocation=invocation_from_ctx(ctx), success=False, errors=[diag]

@@ -91,5 +91,3 @@ extend-select = ["RUF001", "RUF002", "RUF003"]
 # Example modules are named after their GEMSEO disciplines and scenarios, the
 # same way generated projects are.
 "src/gemseo_gantry/examples/**" = ["N999"]
-# Commands catch any exception at the top level to report it in the CLI result.
-"src/gemseo_gantry/cli/*.py" = ["BLE001"]

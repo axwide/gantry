@@ -260,7 +260,8 @@ def scaffold(
                 force=force,
                 runnable=runnable,
             )
-    except Exception as exc:
+    # Report any failure in the CLI result, so --json always gets an envelope.
+    except Exception as exc:  # noqa: BLE001
         diag = _scaffold_failure_diagnostic(exc)
         envelope = CliResult(
             invocation=invocation_from_ctx(ctx, toml=toml_path.name),

@@ -70,7 +70,7 @@ def _start_quit_key_listener(stop_event: threading.Event) -> threading.Thread | 
                         stop_event.set()
                         return
                     time.sleep(0.05)
-            except Exception:
+            except OSError:
                 return
         else:
             import os
@@ -85,7 +85,7 @@ def _start_quit_key_listener(stop_event: threading.Event) -> threading.Thread | 
                     if _is_quit_key(os.read(fd, 1).decode(errors="ignore")):
                         stop_event.set()
                         return
-            except Exception:
+            except (OSError, termios.error):
                 return
             finally:
                 termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)

@@ -138,7 +138,8 @@ def build(
             lib_artifacts = _gantry.generate_lib(
                 val_result.problem, out_dir, lib_name=lib_name, is_import_root=flat
             )
-    except Exception as exc:
+    # Report any failure in the CLI result, so --json always gets an envelope.
+    except Exception as exc:  # noqa: BLE001
         diag = Diagnostic("internal", str(exc))
         envelope = CliResult(
             invocation=invocation_from_ctx(ctx, toml=toml_path.name),
