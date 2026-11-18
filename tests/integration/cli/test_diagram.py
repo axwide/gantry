@@ -1,8 +1,10 @@
 import json as _json
 import shutil
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -87,27 +89,6 @@ def test_diagram_n2_json_includes_warnings(tmp_path):
     assert len(data["warnings"]) == 1
     assert "sink" in data["warnings"][0]["message"]
     assert data["invocation"]["params"]["toml"] == toml_path.name
-
-
-def test_diagram_xdsm_fails_without_scenario(tmp_path, monkeypatch):
-    toml_path = tmp_path / "vleo.toml"
-    shutil.copy(FIXTURES_TOML, toml_path)
-
-    from gemseo_gantry.model.data_model import Discipline, ProblemDefinition
-
-    no_scenario = ProblemDefinition(
-        disciplines=[Discipline(name="D", inputs=["x"], outputs=["y"])],
-        variables=[],
-    )
-    monkeypatch.setattr(
-        "gemseo_gantry.cli._common.validate_toml", lambda _: no_scenario
-    )
-
-    result = runner.invoke(
-        get_app(), ["diagram", "xdsm", str(toml_path), "--output-dir", str(tmp_path)]
-    )
-
-    assert result.exit_code != 0
 
 
 def test_diagram_help_lists_subcommands():
@@ -250,3 +231,66 @@ def test_diagram_xdsm_no_scenario_error_message(tmp_path):
 
     assert result.exit_code != 0
     assert "scenarios" in result.output.lower() or "XDSM" in result.output
+
+
+_ONE_DISCIPLINE_TOML = (
+    '[disciplines.drag]\ninputs = ["h"]\noutputs = ["f"]\n\n'
+    '[[variables]]\nname = "h"\nunit = "m"\ndata_type = "float"\ndimension = 1\n\n'
+    '[[variables]]\nname = "f"\nunit = "-"\ndata_type = "float"\ndimension = 1\n'
+)
+
+
+def test_diagram_n2_single_discipline_json(tmp_path):
+    """N2 with one discipline is a usage error in the envelope, not a traceback."""
+    toml_path = tmp_path / "problem.toml"
+    toml_path.write_text(_ONE_DISCIPLINE_TOML)
+
+    result = runner.invoke(
+        get_app(),
+        ["diagram", "n2", str(toml_path), "--output-dir", str(tmp_path), "--json"],
+    )
+
+    assert result.exit_code == 1
+    data = _json.loads(result.output)
+    assert data["success"] is False
+    assert data["errors"][0]["type"] == "usage"
+    assert "two disciplines" in data["errors"][0]["message"]
+    assert not (tmp_path / "n2.pdf").exists()
+
+
+def test_diagram_n2_single_discipline_human(tmp_path):
+    toml_path = tmp_path / "problem.toml"
+    toml_path.write_text(_ONE_DISCIPLINE_TOML)
+
+    result = runner.invoke(
+        get_app(), ["diagram", "n2", str(toml_path), "--output-dir", str(tmp_path)]
+    )
+
+    assert result.exit_code == 1
+    assert "two disciplines" in result.output
+    assert result.exception is None or isinstance(result.exception, SystemExit)
+
+
+@pytest.mark.parametrize("command", ["n2", "xdsm"])
+def test_diagram_generation_failure_is_internal_error(tmp_path, monkeypatch, command):
+    """An unexpected failure while generating still produces a JSON envelope."""
+    toml_path = tmp_path / "vleo.toml"
+    shutil.copy(FIXTURES_TOML, toml_path)
+
+    def boom(*_args, **_kwargs):
+        raise RuntimeError("renderer exploded")
+
+    monkeypatch.setattr(
+        "gemseo_gantry.cli.diagram._gantry",
+        SimpleNamespace(generate_n2=boom, generate_xdsm=boom),
+    )
+
+    result = runner.invoke(
+        get_app(),
+        ["diagram", command, str(toml_path), "--output-dir", str(tmp_path), "--json"],
+    )
+
+    assert result.exit_code == 1
+    data = _json.loads(result.output)
+    assert data["success"] is False
+    assert data["errors"] == [{"type": "internal", "message": "renderer exploded"}]
