@@ -1,7 +1,8 @@
 name: Release
 
 # Publishes to PyPI via Trusted Publishing (OIDC) - no API token is stored.
-#   - push a tag `vX.Y.Z` matching `project.version` -> publish to PyPI
+#   - push a tag `vX.Y.Z` matching `project.version` -> publish to PyPI, then
+#                                                      create the GitHub release
 #   - run manually (workflow_dispatch)              -> publish `X.Y.Z.devN` to TestPyPI,
 #                                                      where N is the workflow run number
 on:
@@ -58,3 +59,26 @@ jobs:
           # Sigstore attestations record the repository name in a public
           # transparency log, so only produce them once the repo is public.
           attestations: ${{ !github.event.repository.private }}
+
+  # Only once PyPI has accepted the upload: a PyPI version can never be reused,
+  # while a GitHub release can still be fixed, so it should never announce a
+  # version that isn't installable.
+  github-release:
+    needs: publish
+    if: ${{ github.ref_type == 'tag' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release and upload its assets; nothing else.
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME" dist/*
+          --repo "$GITHUB_REPOSITORY"
+          --verify-tag
+          --generate-notes
