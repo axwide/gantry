@@ -113,11 +113,41 @@ def n2_command(
 
     problem = val_result.problem
 
+    if len(problem.disciplines) < 2:
+        diag = Diagnostic(
+            "usage", "N2 requested but the TOML defines fewer than two disciplines."
+        )
+        envelope = CliResult(
+            invocation=invocation_from_ctx(ctx, toml=toml_path.name),
+            success=False,
+            warnings=val_result.warnings,
+            errors=[diag],
+        )
+        if json_mode:
+            emit_json(envelope)
+        else:
+            emit_human(envelope, console)
+        raise typer.Exit(code=1)
+
     out = output_dir if output_dir is not None else toml_path.parent / "diagrams"
     out.mkdir(parents=True, exist_ok=True)
 
-    with make_spinner(console, "Generating N2…", quiet=quiet, json_mode=json_mode):
-        _gantry.generate_n2(problem, out, fmt=fmt.value)
+    try:
+        with make_spinner(console, "Generating N2…", quiet=quiet, json_mode=json_mode):
+            _gantry.generate_n2(problem, out, fmt=fmt.value)
+    # Report any failure in the CLI result, so --json always gets an envelope.
+    except Exception as exc:  # noqa: BLE001
+        envelope = CliResult(
+            invocation=invocation_from_ctx(ctx, toml=toml_path.name),
+            success=False,
+            warnings=val_result.warnings,
+            errors=[Diagnostic("internal", str(exc))],
+        )
+        if json_mode:
+            emit_json(envelope)
+        else:
+            emit_human(envelope, console)
+        raise typer.Exit(code=1)
     generated_files = [out / f"n2.{fmt.value}", out / "n2.html"]
 
     if not quiet:
@@ -230,8 +260,24 @@ def xdsm_command(
             emit_human(envelope, console)
         raise typer.Exit(code=1)
 
-    with make_spinner(console, "Generating XDSM…", quiet=quiet, json_mode=json_mode):
-        _gantry.generate_xdsm(problem, out)
+    try:
+        with make_spinner(
+            console, "Generating XDSM…", quiet=quiet, json_mode=json_mode
+        ):
+            _gantry.generate_xdsm(problem, out)
+    # Report any failure in the CLI result, so --json always gets an envelope.
+    except Exception as exc:  # noqa: BLE001
+        envelope = CliResult(
+            invocation=invocation_from_ctx(ctx, toml=toml_path.name),
+            success=False,
+            warnings=val_result.warnings,
+            errors=[Diagnostic("internal", str(exc))],
+        )
+        if json_mode:
+            emit_json(envelope)
+        else:
+            emit_human(envelope, console)
+        raise typer.Exit(code=1)
     generated_files = [out / "xdsm.html"]
 
     if not quiet:
