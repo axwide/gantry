@@ -47,7 +47,7 @@ dev = [
     "prek>=0.4",
     "pytest>=9.0.1",
     "pytest-cov>=7.0.0",
-    "ruff>=0.14.7",
+    "ruff>=0.17.4",
     "debugpy>=1.8.17",
     "basedpyright>=1.20.0",
     "syrupy>=6.1.1",
@@ -86,3 +86,8 @@ exclude_lines = [
 [tool.ruff.lint]
 # Flag Unicode characters easily confused with ASCII (en dash, minus sign, ...).
 extend-select = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+# Example modules are named after their GEMSEO disciplines and scenarios, the
+# same way generated projects are.
+"src/gemseo_gantry/examples/**" = ["N999"]

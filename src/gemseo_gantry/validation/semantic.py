@@ -263,8 +263,10 @@ def check_root_exists(parsed: TomlProblemDefinition) -> list[str]:
     roots = [name for name in parsed.scenarios if name not in subs]
     if not roots:
         return [
-            "No root scenario found: every scenario is nested under another "
-            "(a cycle); exactly one top-level scenario is required"
+            (
+                "No root scenario found: every scenario is nested under another "
+                "(a cycle); exactly one top-level scenario is required"
+            )
         ]
     return []
 

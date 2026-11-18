@@ -1,7 +1,7 @@
 import keyword
 import math
 from enum import StrEnum
-from typing import Any, List, Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, computed_field, field_validator
 
@@ -64,8 +64,8 @@ class Variable(BaseModel):
 
 class Discipline(BaseModel):
     name: str
-    inputs: List[str] = []
-    outputs: List[str] = []
+    inputs: list[str] = []
+    outputs: list[str] = []
 
     @field_validator("name")
     @classmethod
@@ -98,13 +98,13 @@ class Objective(BaseModel):
 
 class Scenario(BaseModel):
     name: str
-    design_variables: List[str]
-    disciplines: List[str]
+    design_variables: list[str]
+    disciplines: list[str]
     formulation_type: Literal["DOE", "MDO"]
     formulation: FormulationType | None = None
     objective: Objective
-    constraints: List[Constraint]
-    observables: List[str] = Field(default_factory=list)
+    constraints: list[Constraint]
+    observables: list[str] = Field(default_factory=list)
 
     @field_validator("name")
     @classmethod
@@ -113,9 +113,9 @@ class Scenario(BaseModel):
 
 
 class ProblemDefinition(BaseModel):
-    variables: List[Variable]
-    disciplines: List[Discipline]
-    scenarios: List[Scenario] = Field(default_factory=list)
+    variables: list[Variable]
+    disciplines: list[Discipline]
+    scenarios: list[Scenario] = Field(default_factory=list)
 
     @computed_field  # type: ignore[prop-decorator]
     @property

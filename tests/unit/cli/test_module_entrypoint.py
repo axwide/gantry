@@ -7,6 +7,7 @@ import sys
 def test_module_runs_as_main():
     result = subprocess.run(
         [sys.executable, "-m", "gemseo_gantry", "--help"],
+        check=False,
         capture_output=True,
         text=True,
     )

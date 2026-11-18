@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from enum import Enum
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -33,7 +33,7 @@ def example(
         typer.Argument(help="Example to generate"),
     ],
     path: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(help="Parent directory", show_default="current directory"),
     ] = None,
     explain: Annotated[
@@ -155,7 +155,8 @@ def example(
         from ..examples.runner import generate_example
 
         run = generate_example(ex, target)
-    except Exception as exc:  # pragma: no cover - defensive
+    # Report any failure in the CLI result, so --json always gets an envelope.
+    except Exception as exc:  # noqa: BLE001  # pragma: no cover - defensive
         diag = Diagnostic("internal", str(exc))
         envelope = CliResult(
             invocation=invocation_from_ctx(ctx), success=False, errors=[diag]

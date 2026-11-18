@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 import lazy_loader as lazy
 import typer
@@ -11,21 +11,21 @@ from rich.panel import Panel
 
 _gantry: Any = lazy.load("gemseo_gantry")
 
-from ._artifacts import rel_to_cwd  # noqa: E402
-from ._common import (  # noqa: E402
+from ._artifacts import rel_to_cwd
+from ._common import (
     ResolveError,
     invocation_from_ctx,
     make_spinner,
     resolve_toml,
     run_validate,
 )
-from ._render import (  # noqa: E402
+from ._render import (
     emit_human,
     emit_json,
     render_resolve_error,
     render_warnings,
 )
-from ._result import (  # noqa: E402
+from ._result import (
     Artifact,
     CliResult,
     Diagnostic,
@@ -76,14 +76,14 @@ def _scaffold_failure_diagnostic(exc: Exception) -> Diagnostic:
 def scaffold(
     ctx: typer.Context,
     toml: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(
             help="Path to problem definition TOML file",
             show_default="auto-detect in cwd",
         ),
     ] = None,
     disciplines_into: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--disciplines-into",
             help="Directory for discipline stubs",
@@ -91,7 +91,7 @@ def scaffold(
         ),
     ] = None,
     executor_into: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--executor-into",
             help="Directory for scenario executor file",
@@ -99,7 +99,7 @@ def scaffold(
         ),
     ] = None,
     lib_dir: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--lib-dir",
             help="Path to the lib directory produced by 'gantry build'",
@@ -107,7 +107,7 @@ def scaffold(
         ),
     ] = None,
     import_root: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--import-root",
             help="sys.path root for import path computation",
@@ -118,7 +118,7 @@ def scaffold(
         bool, typer.Option("--force", "-f", help="Overwrite existing files")
     ] = False,
     only: Annotated[
-        Optional[list[str]],
+        list[str] | None,
         typer.Option(
             "--only",
             help=(
@@ -260,7 +260,8 @@ def scaffold(
                 force=force,
                 runnable=runnable,
             )
-    except Exception as exc:
+    # Report any failure in the CLI result, so --json always gets an envelope.
+    except Exception as exc:  # noqa: BLE001
         diag = _scaffold_failure_diagnostic(exc)
         envelope = CliResult(
             invocation=invocation_from_ctx(ctx, toml=toml_path.name),

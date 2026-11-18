@@ -84,7 +84,7 @@ def test_walkthrough_runs_all_stage_commands(monkeypatch, tmp_path):
 
 
 def run_helper(tmp_path, console):
-    from gemseo_gantry.cli._walkthrough import run_walkthrough  # noqa: PLC0415
+    from gemseo_gantry.cli._walkthrough import run_walkthrough
 
     return run_walkthrough(get_example("sellar"), tmp_path / "sellar", console)
 

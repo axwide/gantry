@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -25,7 +25,7 @@ _TEMPLATE = Path(__file__).parent / "templates" / "problem.toml"
 def init(
     ctx: typer.Context,
     path: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(
             help="Where to write the template", show_default="./problem.toml"
         ),

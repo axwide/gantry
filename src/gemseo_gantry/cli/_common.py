@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from pathlib import Path
 from tomllib import TOMLDecodeError
+from typing import Self
 
 import typer
 from rich.console import Console
@@ -115,7 +116,7 @@ class _NoOpSpinner:
     def update(self, *_: object, **_kwargs: object) -> None:
         pass
 
-    def __enter__(self) -> _NoOpSpinner:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *_: object) -> None:

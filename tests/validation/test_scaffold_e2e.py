@@ -56,6 +56,7 @@ def test_scaffold_e2e_workflow(tmp_path):
 
     proc = subprocess.run(
         [sys.executable, str(execute_script)],
+        check=False,
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -69,6 +70,7 @@ def test_scaffold_e2e_workflow(tmp_path):
 
     proc = subprocess.run(
         [sys.executable, str(load_script)],
+        check=False,
         cwd=tmp_path,
         capture_output=True,
         text=True,
