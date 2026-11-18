@@ -1,12 +1,13 @@
 name: Release
 
 # Publishes to PyPI via Trusted Publishing (OIDC) - no API token is stored.
-#   - push a tag `vX.Y.Z` matching `project.version` -> publish to PyPI
+#   - a GitHub release `vX.Y.Z` is published         -> publish to PyPI
+#     (release-please creates it when its release PR is merged)
 #   - run manually (workflow_dispatch)              -> publish `X.Y.Z.devN` to TestPyPI,
 #                                                      where N is the workflow run number
 on:
-  push:
-    tags: ["v*"]
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
