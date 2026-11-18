@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -23,7 +23,7 @@ console = Console()
 def schema(
     ctx: typer.Context,
     path: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(
             help="Directory to write schema/problem.schema.json into",
             show_default="cwd",

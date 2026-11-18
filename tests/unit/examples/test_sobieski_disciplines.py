@@ -20,7 +20,7 @@ def sobieski_tree(tmp_path):
         yield tmp_path
     finally:
         for key in list(sys.modules):
-            if key == "lib" or key.startswith("lib.") or key.startswith("disciplines"):
+            if key == "lib" or key.startswith(("lib.", "disciplines")):
                 sys.modules.pop(key, None)
         sys.path.remove(str(tmp_path))
 

@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence, cast
+from typing import cast
 
 from gemseo import generate_n2_plot, generate_xdsm
 from gemseo.core.discipline import Discipline

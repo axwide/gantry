@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from pathlib import Path
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 import lazy_loader as lazy
 import typer
@@ -10,16 +10,16 @@ from rich.console import Console
 
 _gantry: Any = lazy.load("gemseo_gantry")
 
-from ._artifacts import rel_to_cwd  # noqa: E402
-from ._common import (  # noqa: E402
+from ._artifacts import rel_to_cwd
+from ._common import (
     ResolveError,
     invocation_from_ctx,
     make_spinner,
     resolve_toml,
     run_validate,
 )
-from ._render import emit_human, emit_json, render_resolve_error  # noqa: E402
-from ._result import (  # noqa: E402
+from ._render import emit_human, emit_json, render_resolve_error
+from ._result import (
     Artifact,
     ArtifactKind,
     ArtifactStatus,
@@ -42,7 +42,7 @@ class N2Format(str, Enum):
 def n2_command(
     ctx: typer.Context,
     toml: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(
             help="Path to problem definition TOML file",
             show_default="auto-detect in cwd",
@@ -52,7 +52,7 @@ def n2_command(
         N2Format, typer.Option("--format", help="N2 output format")
     ] = N2Format.pdf,
     output_dir: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--output-dir",
             help="Output directory",
@@ -144,14 +144,14 @@ def n2_command(
 def xdsm_command(
     ctx: typer.Context,
     toml: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(
             help="Path to problem definition TOML file",
             show_default="auto-detect in cwd",
         ),
     ] = None,
     output_dir: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--output-dir",
             help="Output directory",

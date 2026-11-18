@@ -295,9 +295,11 @@ def test_watch_json_emits_ndjson(tmp_path: Path) -> None:
     from gemseo_gantry.cli.validate import _run
 
     buf = io.StringIO()
-    with patch("watchfiles.watch", return_value=iter(fake_changes)):
-        with contextlib.redirect_stdout(buf):
-            _run(toml, invocation=_inv(toml), watch=True, console=con, json_mode=True)
+    with (
+        patch("watchfiles.watch", return_value=iter(fake_changes)),
+        contextlib.redirect_stdout(buf),
+    ):
+        _run(toml, invocation=_inv(toml), watch=True, console=con, json_mode=True)
     lines = [ln for ln in buf.getvalue().splitlines() if ln.strip()]
     assert len(lines) == 2  # initial + 1 watch event
     for line in lines:
@@ -358,11 +360,11 @@ def test_watch_passes_stop_event_to_watchfiles(tmp_path: Path) -> None:
 
     from gemseo_gantry.cli.validate import _run
 
-    with patch("watchfiles.watch", side_effect=capture_watch):
-        with patch(
-            "gemseo_gantry.cli.validate._start_quit_key_listener", return_value=None
-        ):
-            _run(toml, invocation=_inv(toml), watch=True, console=con, json_mode=False)
+    with (
+        patch("watchfiles.watch", side_effect=capture_watch),
+        patch("gemseo_gantry.cli.validate._start_quit_key_listener", return_value=None),
+    ):
+        _run(toml, invocation=_inv(toml), watch=True, console=con, json_mode=False)
 
     assert isinstance(captured_kwargs.get("stop_event"), threading.Event)
 
@@ -402,13 +404,11 @@ def test_watch_stops_listener_thread_via_stop_event(tmp_path: Path) -> None:
 
     from gemseo_gantry.cli.validate import _run
 
-    with patch("watchfiles.watch", side_effect=capture_watch):
-        with patch(
-            "gemseo_gantry.cli.validate._start_quit_key_listener", return_value=None
-        ):
-            rc = _run(
-                toml, invocation=_inv(toml), watch=True, console=con, json_mode=False
-            )
+    with (
+        patch("watchfiles.watch", side_effect=capture_watch),
+        patch("gemseo_gantry.cli.validate._start_quit_key_listener", return_value=None),
+    ):
+        rc = _run(toml, invocation=_inv(toml), watch=True, console=con, json_mode=False)
 
     assert rc == 0
     assert captured_stop_event["event"].is_set()
@@ -422,13 +422,11 @@ def test_watch_continues_when_listener_unavailable(tmp_path: Path) -> None:
 
     from gemseo_gantry.cli.validate import _run
 
-    with patch("watchfiles.watch", side_effect=KeyboardInterrupt):
-        with patch(
-            "gemseo_gantry.cli.validate._start_quit_key_listener", return_value=None
-        ):
-            rc = _run(
-                toml, invocation=_inv(toml), watch=True, console=con, json_mode=False
-            )
+    with (
+        patch("watchfiles.watch", side_effect=KeyboardInterrupt),
+        patch("gemseo_gantry.cli.validate._start_quit_key_listener", return_value=None),
+    ):
+        rc = _run(toml, invocation=_inv(toml), watch=True, console=con, json_mode=False)
 
     assert rc == 0
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from enum import Enum
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -33,7 +33,7 @@ def example(
         typer.Argument(help="Example to generate"),
     ],
     path: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(help="Parent directory", show_default="current directory"),
     ] = None,
     explain: Annotated[

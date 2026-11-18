@@ -129,7 +129,7 @@ def test_variables_enum_members(all_problem_defs, temp_generated_dir):
     generate_variables(all_problem_defs, temp_generated_dir)
 
     mod = importlib.import_module("generated.variables")
-    Var = getattr(mod, "Var")
+    Var = mod.Var
     expected = {var.name for var in all_problem_defs.variables}
     actual = {member.value for member in Var}
     assert actual == expected, (
@@ -338,6 +338,7 @@ def test_generated_lib_basedpyright_clean(tmp_path):
 
     result = subprocess.run(
         ["uv", "run", "basedpyright", "--project", str(tmp_path)],
+        check=False,
         capture_output=True,
         text=True,
         cwd=str(PROJECT_ROOT),

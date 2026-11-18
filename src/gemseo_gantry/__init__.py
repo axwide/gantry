@@ -15,11 +15,11 @@ if TYPE_CHECKING:
 __all__ = [
     "ALL_ARTIFACTS",
     "ProblemDefinition",
-    "validate_toml",
     "generate_lib",
-    "generate_scaffold",
     "generate_n2",
+    "generate_scaffold",
     "generate_xdsm",
+    "validate_toml",
 ]
 
 _lazy: dict[str, str] = {

@@ -4,7 +4,7 @@ import io
 import sys
 import threading
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -149,7 +149,7 @@ def _run(
 def validate(
     ctx: typer.Context,
     toml: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(
             help="Path to problem definition TOML file",
             show_default="auto-detect in cwd",

@@ -76,6 +76,7 @@ def test_greenfield_workflow(tmp_path):
     # 4. run execute script -> exit 0 + HDF5 produced
     proc = subprocess.run(
         [sys.executable, str(execute_script)],
+        check=False,
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -89,6 +90,7 @@ def test_greenfield_workflow(tmp_path):
     # 5. run load script -> exit 0 + non-empty stdout
     proc = subprocess.run(
         [sys.executable, str(load_script)],
+        check=False,
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -186,6 +188,7 @@ def test_type_checker_catches_split_variable(tmp_path):
     # 3. basedpyright on v1 lib -> clean (0 errors, no cascade noise)
     proc = subprocess.run(
         ["uv", "run", "basedpyright", "project/user_aero.py"],
+        check=False,
         capture_output=True,
         text=True,
         cwd=str(tmp_path),
@@ -209,6 +212,7 @@ def test_type_checker_catches_split_variable(tmp_path):
     # 5. basedpyright on v2 lib -> exactly 1 error naming the removed variable
     proc = subprocess.run(
         ["uv", "run", "basedpyright", "project/user_aero.py"],
+        check=False,
         capture_output=True,
         text=True,
         cwd=str(tmp_path),
@@ -272,6 +276,7 @@ def test_type_checker_catches_renamed_variable(tmp_path):
     # 3. basedpyright on v1 lib -> clean (0 errors, no cascade noise)
     proc = subprocess.run(
         ["uv", "run", "basedpyright", "project/user_vars.py"],
+        check=False,
         capture_output=True,
         text=True,
         cwd=str(tmp_path),
@@ -298,6 +303,7 @@ def test_type_checker_catches_renamed_variable(tmp_path):
     # 5. basedpyright on v2 lib -> exactly 1 error naming the old enum member
     proc = subprocess.run(
         ["uv", "run", "basedpyright", "project/user_vars.py"],
+        check=False,
         capture_output=True,
         text=True,
         cwd=str(tmp_path),

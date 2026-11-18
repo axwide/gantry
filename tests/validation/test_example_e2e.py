@@ -41,6 +41,7 @@ def test_example_end_to_end(name, tmp_path):
 
     execute = subprocess.run(
         [sys.executable, ex.executor],
+        check=False,
         cwd=target,
         capture_output=True,
         text=True,
@@ -53,6 +54,7 @@ def test_example_end_to_end(name, tmp_path):
 
     post = subprocess.run(
         [sys.executable, "postprocess.py"],
+        check=False,
         cwd=target,
         capture_output=True,
         text=True,

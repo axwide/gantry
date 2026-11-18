@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 import lazy_loader as lazy
 import typer
@@ -9,21 +9,21 @@ from rich.console import Console
 
 _gantry: Any = lazy.load("gemseo_gantry")
 
-from ._artifacts import rel_to_cwd  # noqa: E402
-from ._common import (  # noqa: E402
+from ._artifacts import rel_to_cwd
+from ._common import (
     ResolveError,
     invocation_from_ctx,
     make_spinner,
     resolve_toml,
     run_validate,
 )
-from ._render import (  # noqa: E402
+from ._render import (
     emit_human,
     emit_json,
     render_resolve_error,
     render_warnings,
 )
-from ._result import (  # noqa: E402
+from ._result import (
     Artifact,
     ArtifactKind,
     ArtifactStatus,
@@ -37,14 +37,14 @@ console = Console()
 def build(
     ctx: typer.Context,
     toml: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Argument(
             help="Path to problem definition TOML file",
             show_default="auto-detect in cwd",
         ),
     ] = None,
     out: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--out", "-o", help="Output directory", show_default="TOML parent dir"
         ),
