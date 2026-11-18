@@ -32,7 +32,9 @@ jobs:
 
   # Install the wheel exactly as a user would and drive the CLI. Unlike the
   # job above, this resolves without the dev group and lets uv choose the
-  # interpreter from `requires-python`.
+  # interpreter from `requires-python`. Then run the generated examples the
+  # way the README says, in their own project with uncapped GEMSEO, so a new
+  # GEMSEO release that breaks generated code shows up here.
   tool-install:
     runs-on: ubuntu-latest
     steps:
@@ -49,3 +51,18 @@ jobs:
           gantry example sellar --json | jq -e .success
           gantry example sobieski --json | jq -e .success
           gantry validate --json sobieski/sobieski.toml | jq -e .success
+      # Follows "Running the generated code" in the README. Exit codes only;
+      # pytest checks the optimum values.
+      - name: Run the generated examples
+        working-directory: ${{ runner.temp }}
+        run: |
+          for example in sellar sobieski; do
+            (
+              cd "$example"
+              uv init --bare
+              uv add "gemseo>=6.3"
+              uv pip list | grep -i '^gemseo '
+              uv run execute_*.py
+              uv run postprocess.py
+            )
+          done
