@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from pathlib import Path
-from typing import Annotated, Any, NoReturn
+from typing import Annotated, Any
 
 import lazy_loader as lazy
 import typer
@@ -25,33 +25,11 @@ from ._result import (
     ArtifactStatus,
     CliResult,
     Diagnostic,
-    ValidateResult,
 )
 
 console = Console()
 
 diagram_app = typer.Typer(no_args_is_help=True)
-
-
-def _fail(
-    ctx: typer.Context,
-    toml_path: Path,
-    val_result: ValidateResult,
-    diag: Diagnostic,
-    json_mode: bool,
-) -> NoReturn:
-    """Report a failure after validation passed, then exit with code 1."""
-    envelope = CliResult(
-        invocation=invocation_from_ctx(ctx, toml=toml_path.name),
-        success=False,
-        warnings=val_result.warnings,
-        errors=[diag],
-    )
-    if json_mode:
-        emit_json(envelope)
-    else:
-        emit_human(envelope, console)
-    raise typer.Exit(code=1)
 
 
 class N2Format(str, Enum):
@@ -136,16 +114,20 @@ def n2_command(
     problem = val_result.problem
 
     if len(problem.disciplines) < 2:
-        _fail(
-            ctx,
-            toml_path,
-            val_result,
-            Diagnostic(
-                "usage",
-                "N2 requested but the TOML defines fewer than two disciplines.",
-            ),
-            json_mode,
+        diag = Diagnostic(
+            "usage", "N2 requested but the TOML defines fewer than two disciplines."
         )
+        envelope = CliResult(
+            invocation=invocation_from_ctx(ctx, toml=toml_path.name),
+            success=False,
+            warnings=val_result.warnings,
+            errors=[diag],
+        )
+        if json_mode:
+            emit_json(envelope)
+        else:
+            emit_human(envelope, console)
+        raise typer.Exit(code=1)
 
     out = output_dir if output_dir is not None else toml_path.parent / "diagrams"
     out.mkdir(parents=True, exist_ok=True)
@@ -155,7 +137,17 @@ def n2_command(
             _gantry.generate_n2(problem, out, fmt=fmt.value)
     # Report any failure in the CLI result, so --json always gets an envelope.
     except Exception as exc:  # noqa: BLE001
-        _fail(ctx, toml_path, val_result, Diagnostic("internal", str(exc)), json_mode)
+        envelope = CliResult(
+            invocation=invocation_from_ctx(ctx, toml=toml_path.name),
+            success=False,
+            warnings=val_result.warnings,
+            errors=[Diagnostic("internal", str(exc))],
+        )
+        if json_mode:
+            emit_json(envelope)
+        else:
+            emit_human(envelope, console)
+        raise typer.Exit(code=1)
     generated_files = [out / f"n2.{fmt.value}", out / "n2.html"]
 
     if not quiet:
@@ -253,15 +245,20 @@ def xdsm_command(
     out.mkdir(parents=True, exist_ok=True)
 
     if not problem.scenarios:
-        _fail(
-            ctx,
-            toml_path,
-            val_result,
-            Diagnostic(
-                "usage", "XDSM requested but no scenarios are defined in the TOML."
-            ),
-            json_mode,
+        diag = Diagnostic(
+            "usage", "XDSM requested but no scenarios are defined in the TOML."
         )
+        envelope = CliResult(
+            invocation=invocation_from_ctx(ctx, toml=toml_path.name),
+            success=False,
+            warnings=val_result.warnings,
+            errors=[diag],
+        )
+        if json_mode:
+            emit_json(envelope)
+        else:
+            emit_human(envelope, console)
+        raise typer.Exit(code=1)
 
     try:
         with make_spinner(
@@ -270,7 +267,17 @@ def xdsm_command(
             _gantry.generate_xdsm(problem, out)
     # Report any failure in the CLI result, so --json always gets an envelope.
     except Exception as exc:  # noqa: BLE001
-        _fail(ctx, toml_path, val_result, Diagnostic("internal", str(exc)), json_mode)
+        envelope = CliResult(
+            invocation=invocation_from_ctx(ctx, toml=toml_path.name),
+            success=False,
+            warnings=val_result.warnings,
+            errors=[Diagnostic("internal", str(exc))],
+        )
+        if json_mode:
+            emit_json(envelope)
+        else:
+            emit_human(envelope, console)
+        raise typer.Exit(code=1)
     generated_files = [out / "xdsm.html"]
 
     if not quiet:
