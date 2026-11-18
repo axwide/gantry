@@ -23,9 +23,8 @@ jobs:
   release-please:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # release commits, tags and the GitHub release.
-      pull-requests: write # open and update the release PR.
+    # release-please acts with the PAT below, not GITHUB_TOKEN.
+    permissions: {}
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -33,6 +32,11 @@ jobs:
       - id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
+          # A fine-grained PAT for this repo only, with read and write on
+          # contents, pull requests and issues (for the PR labels). It has to be
+          # a PAT because events from GITHUB_TOKEN don't trigger workflows, so
+          # CI would never run on the release PR and `ci-ok` would never pass.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
