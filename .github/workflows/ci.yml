@@ -42,23 +42,18 @@ jobs:
   pytest:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # gantry runs only on the Python that `requires-python` pins. The
-        # one-entry matrix keeps the required check named `pytest (3.13)`.
-        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # uv picks the Python from `requires-python`.
       - uses: astral-sh/setup-uv@18d369b23da25a81e9458561248e1aafff6a70fa # v10.3.1
         with:
-          python-version: ${{ matrix.python-version }}
           enable-cache: true
       - run: uv sync --locked
       - run: uv run --no-sync pytest --maxfail=1 --disable-warnings --cov-report=term-missing --cov-report=xml:coverage.xml
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: coverage-py${{ matrix.python-version }}
+          name: coverage
           path: coverage.xml
 
   # Structural check of the starter template against the generated JSON Schema.
@@ -77,6 +72,21 @@ jobs:
           gunzip -c taplo.gz > /usr/local/bin/taplo
           chmod +x /usr/local/bin/taplo
       - run: taplo lint --schema "file://$PWD/schema/problem.schema.json" src/gemseo_gantry/cli/templates/problem.toml
+
+  # The one check the `main` ruleset requires. Add new jobs to `needs` instead
+  # of to the ruleset, so the gate changes through a reviewed PR.
+  # `always()` makes it run, and fail, when a job it needs fails; a skipped
+  # required check would count as passing.
+  ci-ok:
+    if: ${{ always() && !github.event.pull_request.draft }}
+    needs: [ruff, basedpyright, pytest, taplo]
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$NEEDS" | jq -e 'all(.[]; .result == "success")' > /dev/null
 
   build:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
