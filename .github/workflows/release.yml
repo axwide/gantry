@@ -1,36 +1,73 @@
 name: Release
 
-# Publishes to PyPI via Trusted Publishing (OIDC) - no API token is stored.
-#   - push a tag `vX.Y.Z` matching `project.version` -> publish to PyPI
-#   - run manually (workflow_dispatch)              -> publish `X.Y.Z.devN` to TestPyPI,
-#                                                      where N is the workflow run number
+# Every push to main updates a release PR that release-please keeps open. It
+# bumps the version in pyproject.toml and uv.lock and adds a CHANGELOG entry,
+# both worked out from the conventional commits since the last release.
+# Merging that PR tags vX.Y.Z, creates the GitHub release and publishes to PyPI
+# via Trusted Publishing (OIDC), so no API token is stored.
+# Running it manually (workflow_dispatch) publishes `X.Y.Z.devN` to TestPyPI
+# instead, where N is the workflow run number.
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
+
+# Two quick merges must not race each other over the release PR or the tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  build:
+  release-please:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # release commits, tags and the GitHub release.
+      pull-requests: write # open and update the release PR.
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build:
+    needs: release-please
+    # The release-please job is skipped on manual runs, so check for that
+    # explicitly instead of relying on the default `success()`.
+    if: >-
+      ${{ !cancelled() && (
+        needs.release-please.outputs.release_created == 'true' ||
+        github.event_name == 'workflow_dispatch'
+      ) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
-      - name: Check tag matches project version
-        if: ${{ github.ref_type == 'tag' }}
+      - name: Check the tag matches the project version
+        if: ${{ github.event_name == 'push' }}
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
         run: |
           version="$(uv version --short)"
-          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} does not match project version ${version}"
+          if [ "v${version}" != "${TAG}" ]; then
+            echo "::error::Tag ${TAG} does not match project version ${version}"
             exit 1
           fi
       # (Test)PyPI never accepts the same version twice, even after deletion,
       # so give every dry run its own dev version. Only the build sees it;
       # nothing is committed.
       - name: Stamp a dev version for TestPyPI
-        if: ${{ github.ref_type != 'tag' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: uv version --frozen "$(uv version --short).dev${GITHUB_RUN_NUMBER}"
       - run: uv build
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -44,7 +81,7 @@ jobs:
     # Must match the environment configured on the (Test)PyPI trusted publisher.
     # Add required reviewers to the `pypi` environment on GitHub to gate releases.
     environment:
-      name: ${{ github.ref_type == 'tag' && 'pypi' || 'testpypi' }}
+      name: ${{ github.event_name == 'push' && 'pypi' || 'testpypi' }}
     permissions:
       id-token: write # OIDC token for Trusted Publishing; nothing else.
     steps:
@@ -54,7 +91,7 @@ jobs:
           path: dist/
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
-          repository-url: ${{ github.ref_type == 'tag' && 'https://upload.pypi.org/legacy/' || 'https://test.pypi.org/legacy/' }}
+          repository-url: ${{ github.event_name == 'push' && 'https://upload.pypi.org/legacy/' || 'https://test.pypi.org/legacy/' }}
           # Sigstore attestations record the repository name in a public
           # transparency log, so only produce them once the repo is public.
           attestations: ${{ !github.event.repository.private }}
