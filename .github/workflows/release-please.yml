@@ -1,0 +1,31 @@
+name: Release Please
+
+# Every push to main updates a release PR that release-please keeps open. It
+# bumps the version in pyproject.toml and uv.lock and adds a CHANGELOG entry,
+# both worked out from the conventional commits since the last release.
+# Merging that PR tags vX.Y.Z and creates the GitHub release, which triggers
+# the Release workflow to publish to PyPI.
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+# Two quick merges must not race each other over the release PR or the tag.
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          # A fine-grained PAT for this repo only, with read and write on
+          # contents, pull requests and issues (for the PR labels). Events from
+          # GITHUB_TOKEN don't trigger workflows, so with it CI would never run
+          # on the release PR and the release wouldn't trigger the publish.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
