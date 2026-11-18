@@ -1,5 +1,11 @@
-# Version updates only. Security updates are switched on in the repo settings
-# and ignore `cooldown`, so vulnerability fixes aren't delayed.
+# Version updates for GitHub Actions only. Security updates are switched on in
+# the repo settings and cover uv.lock too; they ignore `cooldown`, so
+# vulnerability fixes aren't delayed.
+#
+# There are no version updates for uv. gantry is installed with
+# `uv tool install`, which ignores uv.lock and resolves the newest versions
+# that pyproject.toml allows. Lockfile bumps wouldn't change what users get,
+# and the weekly upstream workflow already tests those newest versions.
 version: 2
 updates:
   # Workflows pin actions to commit SHAs; Dependabot bumps the SHA and the
@@ -16,21 +22,3 @@ updates:
         patterns: ["*"]
     commit-message:
       prefix: "ci"
-
-  - package-ecosystem: "uv"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    # gemseo-gantry is a library: keep the lower bounds in pyproject.toml
-    # broad and only move uv.lock, which is what CI tests against.
-    versioning-strategy: "lockfile-only"
-    cooldown:
-      default-days: 7
-    groups:
-      # Minor and patch bumps land as one PR; majors get their own.
-      python:
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
-    commit-message:
-      prefix: "chore"
-      include: "scope"

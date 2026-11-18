@@ -2,9 +2,9 @@ name: Upstream dependencies
 
 # Early warning for dependency releases, GEMSEO above all. Regular CI tests the
 # frozen uv.lock, so it can't notice when a new release within our ranges
-# breaks us. This runs the tests against the newest stable versions that
-# pyproject.toml allows.
-# It never gates a PR. A red run means "look at this before users hit it".
+# breaks us. These jobs run against the newest stable versions that
+# pyproject.toml allows, which is what a new user's `uv tool install` gets.
+# They never gate a PR. A red run means "look at this before users hit it".
 on:
   schedule:
     - cron: "17 5 * * 1" # Mondays, 05:17 UTC
@@ -23,10 +23,29 @@ jobs:
       - uses: astral-sh/setup-uv@18d369b23da25a81e9458561248e1aafff6a70fa # v10.3.1
         with:
           python-version: "3.13"
-      # Ignore the pins in uv.lock and resolve fresh from pyproject.toml, as a
-      # new user's install would. uv records the result in this checkout's
-      # uv.lock (never committed), which keeps tests that shell out to
-      # `uv run` on the upgraded versions.
+      # Ignore the pins in uv.lock and resolve fresh from pyproject.toml.
+      # uv records the result in this checkout's uv.lock (never committed),
+      # which keeps tests that shell out to `uv run` on the upgraded versions.
       - run: uv sync --upgrade
       - run: uv pip list
       - run: uv run --no-sync pytest --disable-warnings
+
+  # Install the wheel exactly as a user would and drive the CLI. Unlike the
+  # job above, this resolves without the dev group and lets uv choose the
+  # interpreter from `requires-python`.
+  tool-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@18d369b23da25a81e9458561248e1aafff6a70fa # v10.3.1
+      - run: uv build --wheel
+      - run: uv tool install dist/*.whl
+      - run: uv tool list --show-paths
+      - name: Smoke-test the CLI
+        working-directory: ${{ runner.temp }}
+        run: |
+          gantry example sellar --json | jq -e .success
+          gantry example sobieski --json | jq -e .success
+          gantry validate --json sobieski/sobieski.toml | jq -e .success
