@@ -91,3 +91,9 @@ extend-select = ["RUF001", "RUF002", "RUF003"]
 # Example modules are named after their GEMSEO disciplines and scenarios, the
 # same way generated projects are.
 "src/gemseo_gantry/examples/**" = ["N999"]
+
+[tool.ruff.lint.isort]
+# The example projects import their generated `lib` and their `disciplines`
+# package as first-party code, which is how ruff sees them once copied into a
+# user's project. Nothing in gantry itself has a top-level module by either name.
+known-first-party = ["lib", "disciplines"]

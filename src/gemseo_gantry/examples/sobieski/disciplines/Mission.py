@@ -1,6 +1,7 @@
 # pyright: reportMissingImports=false
 from gemseo.problems.mdo.sobieski.disciplines import SobieskiMission
 from gemseo.typing import StrKeyMapping
+
 from lib.Mission_base import MissionBase
 from lib.Mission_io import MissionOutputs
 

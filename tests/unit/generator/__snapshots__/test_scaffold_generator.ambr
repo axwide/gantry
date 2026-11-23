@@ -3,6 +3,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Drag_base import DragBase
   from generated.lib.Drag_io import (
       DragInputs,
@@ -39,6 +40,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Link_base import LinkBase
   from generated.lib.Link_io import (
       LinkInputs,
@@ -79,6 +81,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Mass_base import MassBase
   from generated.lib.Mass_io import (
       MassInputs,
@@ -113,6 +116,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Power_base import PowerBase
   from generated.lib.Power_io import (
       PowerInputs,
@@ -152,6 +156,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Drag_base import DragBase
   from generated.lib.Drag_io import (
       DragInputs,
@@ -188,6 +193,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Link_base import LinkBase
   from generated.lib.Link_io import (
       LinkInputs,
@@ -228,6 +234,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Mass_base import MassBase
   from generated.lib.Mass_io import (
       MassInputs,
@@ -262,6 +269,7 @@
   '''
   import numpy as np
   from gemseo.typing import StrKeyMapping
+  
   from generated.lib.Power_base import PowerBase
   from generated.lib.Power_io import (
       PowerInputs,
@@ -301,12 +309,13 @@
   '''
   from pathlib import Path
   
+  from gemseo.formulations.mdf_settings import MDF_Settings
+  from gemseo.settings.opt import SLSQP_Settings
+  
   from disciplines.Drag_scaffold import Drag
   from disciplines.Link_scaffold import Link
   from disciplines.Mass_scaffold import Mass
   from disciplines.Power_scaffold import Power
-  from gemseo.formulations.mdf_settings import MDF_Settings
-  from gemseo.settings.opt import SLSQP_Settings
   from generated.lib.Vleo import (
       VleoDisciplines,
       construct_Vleo,

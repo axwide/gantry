@@ -1,6 +1,7 @@
 # pyright: reportMissingImports=false
 import numpy as np
 from gemseo.typing import StrKeyMapping
+
 from lib.Sellar2_base import Sellar2Base
 from lib.Sellar2_io import (
     Sellar2Inputs,

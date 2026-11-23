@@ -1,5 +1,6 @@
 import keyword
 import shutil
+from collections.abc import Iterable
 from pathlib import Path
 
 import black
@@ -62,9 +63,45 @@ def lib_import_root(lib_dest: Path, import_root: Path) -> str:
     return ".".join(parts)
 
 
-def _format_code(source: str) -> str:
-    """Sort imports and format Python source code."""
-    source = isort_code(source, profile="black")
+def first_party_roots(package: str, modules: Iterable[str] = ()) -> set[str]:
+    """Top-level names that generated imports of the user's own code start with.
+
+    Args:
+        package: Dotted package the modules are imported from (e.g.
+            ``"myproject.lib"``), or ``""`` when they sit directly on the import root.
+        modules: Module names imported directly from the import root. Only used
+            when ``package`` is empty.
+
+    Returns:
+        The first dotted component of ``package``, or ``modules`` themselves when
+        there is no package.
+    """
+    return {package.partition(".")[0]} if package else set(modules)
+
+
+def _format_code(source: str, first_party: Iterable[str] = ()) -> str:
+    """Sort imports and format Python source code.
+
+    isort normally decides what is first-party by looking for the module under
+    the current working directory, which would make the output depend on where
+    gantry happens to be run from. Turning that lookup off and naming the
+    first-party packages explicitly keeps the output the same everywhere, with
+    the user's own packages in their own block after the third-party one.
+
+    Args:
+        source: The Python source to format.
+        first_party: Top-level names of the user's own packages or modules that
+            ``source`` imports with absolute imports.
+
+    Returns:
+        The formatted source.
+    """
+    source = isort_code(
+        source,
+        profile="black",
+        src_paths=(),
+        known_first_party=frozenset(first_party),
+    )
     return black.format_str(source, mode=black.Mode())
 
 
@@ -404,7 +441,7 @@ def generate_discipline_scaffold(
             lib_package=lib_package,
             runnable=runnable,
         )
-        content = _format_code(content)
+        content = _format_code(content, first_party_roots(lib_package))
         file_name = f"{discipline.name}_scaffold.py"
         file_path = output_dir / file_name
         file_path.write_text(content, encoding="utf-8")

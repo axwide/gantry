@@ -1,6 +1,7 @@
 # pyright: reportMissingImports=false
 from gemseo.problems.mdo.sobieski.disciplines import SobieskiAerodynamics
 from gemseo.typing import StrKeyMapping
+
 from lib.Aerodynamics_base import AerodynamicsBase
 from lib.Aerodynamics_io import AerodynamicsOutputs
 
