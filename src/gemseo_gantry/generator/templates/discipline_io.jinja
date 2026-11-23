@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 {% if needs_any %}
@@ -21,7 +22,7 @@ class {{ discipline_name }}Inputs:
 {%- endfor %}
 
     @classmethod
-    def from_dict(cls, d: dict[str, NDArray[{{ inputs_dict_type }}]]) -> {{ discipline_name }}Inputs:
+    def from_dict(cls, d: Mapping[str, NDArray[{{ inputs_dict_type }}]]) -> {{ discipline_name }}Inputs:
         return cls(
 {%- for field in input_fields %}
             {{ field.name }}=d[Var.{{ field.name.upper() }}],

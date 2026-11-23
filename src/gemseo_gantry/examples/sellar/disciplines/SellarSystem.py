@@ -1,4 +1,4 @@
-# pyright: reportMissingImports=false, reportArgumentType=false
+# pyright: reportMissingImports=false
 import numpy as np
 from gemseo.typing import StrKeyMapping
 from lib.SellarSystem_base import SellarSystemBase

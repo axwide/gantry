@@ -297,6 +297,7 @@
   '''
   from __future__ import annotations
   
+  from collections.abc import Mapping
   from dataclasses import dataclass
   from pathlib import Path
   
@@ -318,7 +319,7 @@
       f_thruster: NDArray[np.floating]
   
       @classmethod
-      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> DragInputs:
+      def from_dict(cls, d: Mapping[str, NDArray[np.floating]]) -> DragInputs:
           return cls(
               h=d[Var.H],
               a_panel=d[Var.A_PANEL],
@@ -345,6 +346,7 @@
   '''
   from __future__ import annotations
   
+  from collections.abc import Mapping
   from dataclasses import dataclass
   from pathlib import Path
   
@@ -370,7 +372,7 @@
       eb_n0_req: NDArray[np.floating]
   
       @classmethod
-      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> LinkInputs:
+      def from_dict(cls, d: Mapping[str, NDArray[np.floating]]) -> LinkInputs:
           return cls(
               h=d[Var.H],
               p_tx=d[Var.P_TX],
@@ -401,6 +403,7 @@
   '''
   from __future__ import annotations
   
+  from collections.abc import Mapping
   from dataclasses import dataclass
   from pathlib import Path
   
@@ -420,7 +423,7 @@
       specific_mass_panel: NDArray[np.floating]
   
       @classmethod
-      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> MassInputs:
+      def from_dict(cls, d: Mapping[str, NDArray[np.floating]]) -> MassInputs:
           return cls(
               a_panel=d[Var.A_PANEL],
               m_bus=d[Var.M_BUS],
@@ -445,6 +448,7 @@
   '''
   from __future__ import annotations
   
+  from collections.abc import Mapping
   from dataclasses import dataclass
   from pathlib import Path
   
@@ -469,7 +473,7 @@
       p_thruster: NDArray[np.floating]
   
       @classmethod
-      def from_dict(cls, d: dict[str, NDArray[np.floating]]) -> PowerInputs:
+      def from_dict(cls, d: Mapping[str, NDArray[np.floating]]) -> PowerInputs:
           return cls(
               a_panel=d[Var.A_PANEL],
               duty_cycle=d[Var.DUTY_CYCLE],
