@@ -5,8 +5,8 @@ from typing import Any
 
 from gemseo import create_scenario
 from gemseo.algos.design_space import DesignSpace
-{% if plain_disciplines %}from gemseo.core.discipline import Discipline
-{% endif %}from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
+from gemseo.core.discipline import Discipline
+from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
 from gemseo.scenarios.base_scenario import BaseScenario
 
 from .variables import Var
@@ -38,7 +38,7 @@ def construct_{{ scenario_name }}(
     sub_scenarios: {{ scenario_name }}SubScenarios,
 {%- endif %}
     design_space_path: Path = DESIGN_SPACE_PATH,
-    formulation_settings_model: (BaseFormulationSettings | None) = None,
+    formulation_settings_model: BaseFormulationSettings | None = None,
     **formulation_settings: Any,
 ) -> BaseScenario:
     # ------------------------ from the ProblemFormulation ----------------------- #

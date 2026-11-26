@@ -119,7 +119,6 @@
 # name: test_generate_discipline_grammars[Drag]
   '''
   # ruff: noqa: N999
-  
   from typing import cast
   
   import numpy as np
@@ -164,7 +163,6 @@
 # name: test_generate_discipline_grammars[Link]
   '''
   # ruff: noqa: N999
-  
   from typing import cast
   
   import numpy as np
@@ -229,7 +227,6 @@
 # name: test_generate_discipline_grammars[Mass]
   '''
   # ruff: noqa: N999
-  
   from typing import cast
   
   import numpy as np
@@ -264,7 +261,6 @@
 # name: test_generate_discipline_grammars[Power]
   '''
   # ruff: noqa: N999
-  
   from typing import cast
   
   import numpy as np

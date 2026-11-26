@@ -1,11 +1,11 @@
+import json
 import keyword
 import shutil
+import subprocess
 from collections.abc import Iterable
 from pathlib import Path
 
-import black
 import pandas as pd
-from isort import code as isort_code
 from jinja2 import Environment, FileSystemLoader
 
 from gemseo_gantry.artifacts import ArtifactKind, GeneratedArtifact
@@ -80,13 +80,18 @@ def first_party_roots(package: str, modules: Iterable[str] = ()) -> set[str]:
 
 
 def _format_code(source: str, first_party: Iterable[str] = ()) -> str:
-    """Sort imports and format Python source code.
+    """Drop unused imports, sort imports and format Python source code with ruff.
 
-    isort normally decides what is first-party by looking for the module under
-    the current working directory, which would make the output depend on where
-    gantry happens to be run from. Turning that lookup off and naming the
-    first-party packages explicitly keeps the output the same everywhere, with
-    the user's own packages in their own block after the third-party one.
+    Templates import everything a file might need and leave the pruning to ruff,
+    instead of tracking which imports each variant uses.
+
+    ruff normally decides what is first-party by looking for the module under
+    its ``src`` directories, which default to the current working directory, so
+    the output would depend on where gantry happens to be run from. Emptying
+    ``src`` and naming the first-party packages explicitly keeps the output the
+    same everywhere, with the user's own packages in their own block after the
+    third-party one. ``--isolated`` keeps the user's own ruff configuration out
+    of it for the same reason.
 
     Args:
         source: The Python source to format.
@@ -96,13 +101,30 @@ def _format_code(source: str, first_party: Iterable[str] = ()) -> str:
     Returns:
         The formatted source.
     """
-    source = isort_code(
-        source,
-        profile="black",
-        src_paths=(),
-        known_first_party=frozenset(first_party),
-    )
-    return black.format_str(source, mode=black.Mode())
+    from ruff.__main__ import find_ruff_bin
+
+    ruff = find_ruff_bin()
+    settings = [
+        "--isolated",
+        "--config",
+        "src = []",
+        "--config",
+        f"lint.isort.known-first-party = {json.dumps(sorted(first_party))}",
+    ]
+    fixed = subprocess.run(
+        [ruff, "check", *settings, "--select", "F401,I", "--fix", "--exit-zero", "-"],
+        input=source,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+    return subprocess.run(
+        [ruff, "format", *settings, "-"],
+        input=fixed,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
 
 
 def discipline_io_filename(name: str) -> str:
@@ -268,23 +290,10 @@ def generate_discipline_grammars(
             }
             for var_name in sorted(discipline.outputs)
         ]
-        has_defaults = any(f["default_values"] is not None for f in input_fields)
-        has_integer_field = any(
-            f["grammar_type"] != "NDArrayPydantic" for f in input_fields + output_fields
-        )
-        needs_numpy = has_defaults or has_integer_field
-        needs_field = has_defaults or any(
-            f["description"] for f in input_fields + output_fields
-        )
-
         content = template.render(
             discipline_name=discipline.name,
             input_fields=input_fields,
             output_fields=output_fields,
-            has_defaults=has_defaults,
-            needs_numpy=needs_numpy,
-            needs_field=needs_field,
-            needs_ndarray=bool(input_fields or output_fields),
         )
         content = _format_code(content)
         file_path = output_dir / f"{discipline.name}_grammar.py"
@@ -369,16 +378,6 @@ def generate_discipline_io(
             output_fields=output_fields,
             inputs_dict_type=inputs_dict_type,
             outputs_dict_type=outputs_dict_type,
-            needs_any="Any" in (inputs_dict_type, outputs_dict_type),
-            # A discipline with no variables at all types nothing with numpy.
-            needs_numpy=any(
-                t.startswith("np.")
-                for t in (
-                    inputs_dict_type,
-                    outputs_dict_type,
-                    *(f["np_type"] for f in input_fields + output_fields),
-                )
-            ),
         )
         content = _format_code(content)
         file_path = output_dir / discipline_io_filename(discipline.name)

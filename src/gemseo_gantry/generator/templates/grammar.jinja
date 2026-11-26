@@ -1,11 +1,9 @@
 # ruff: noqa: N999
-{% if has_defaults %}
 from typing import cast
 
-{% endif %}{% if needs_numpy %}
 import numpy as np
-{% endif %}{% if needs_ndarray %}from gemseo.utils.pydantic_ndarray import NDArrayPydantic
-{% endif %}from pydantic import BaseModel{% if needs_field %}, Field{% endif %}
+from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+from pydantic import BaseModel, Field
 
 
 class {{ discipline_name }}InputGrammar(BaseModel):

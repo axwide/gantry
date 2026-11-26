@@ -334,12 +334,16 @@ def test_generated_lib_basedpyright_clean(tmp_path):
         generate_discipline_scaffold,
         generate_lib,
     )
-    from gemseo_gantry.parser.toml_parser import parse_toml
+    from gemseo_gantry.validation.pipeline import validate_toml
 
     project_dirs: list[Path] = []
     environments: list[dict[str, object]] = []
     for toml_path in sorted(FIXTURES_DIR.glob("*.toml")):
-        problem = parse_toml(toml_path)
+        # gantry build refuses fixtures that fail validation, so skip them.
+        try:
+            problem = validate_toml(toml_path).problem
+        except (ValueError, NotImplementedError):
+            continue
         project_dir = tmp_path / toml_path.stem
         generate_lib(problem, project_dir)
         scaffold_dir = project_dir / "disciplines"
@@ -386,14 +390,20 @@ def test_generated_project_ruff_clean(tmp_path, runnable):
     ``--isolated`` ignores this repo's ruff settings, so the check matches what a
     user sees in a fresh project. File names follow discipline and scenario names
     (``Aero_base.py``), so generated modules carry their own ``N999`` exemption.
+
+    Only fixtures that pass validation are checked: ``gantry build`` refuses the
+    others, so their output (a discipline with no inputs, say) never reaches a user.
     """
     from gemseo_gantry.generator.lib_generator import generate_lib
     from gemseo_gantry.generator.scaffold_generator import generate_scaffold
-    from gemseo_gantry.parser.toml_parser import parse_toml
+    from gemseo_gantry.validation.pipeline import validate_toml
 
     project_dirs: list[Path] = []
     for toml_path in sorted(FIXTURES_DIR.glob("*.toml")):
-        problem = parse_toml(toml_path)
+        try:
+            problem = validate_toml(toml_path).problem
+        except (ValueError, NotImplementedError):
+            continue
         project_dir = tmp_path / toml_path.stem
         generate_lib(problem, project_dir)
         generate_scaffold(
