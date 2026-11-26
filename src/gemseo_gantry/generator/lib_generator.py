@@ -116,6 +116,7 @@ def _format_code(source: str, first_party: Iterable[str] = ()) -> str:
         input=source,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=True,
     ).stdout
     return subprocess.run(
@@ -123,6 +124,7 @@ def _format_code(source: str, first_party: Iterable[str] = ()) -> str:
         input=fixed,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=True,
     ).stdout
 
