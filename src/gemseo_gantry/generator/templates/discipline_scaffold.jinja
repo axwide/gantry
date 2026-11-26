@@ -15,7 +15,7 @@ class {{ discipline_name }}({{ discipline_name }}Base):
         # -------------------- Start of your analysis computation -------------------- #
         # Access input variables via the 'inputs' object, e.g.:
 {%- for input in inputs %}
-        inputs.{{ input }}
+        _ = inputs.{{ input }}
 {%- endfor %}
 
         # Replace with actual computation
@@ -30,8 +30,7 @@ class {{ discipline_name }}({{ discipline_name }}Base):
 {%- endfor %}
         )
         # --------------------- End of your analysis computation --------------------- #
-{% if runnable %}
-        return outputs
-{%- else %}
-        raise NotImplementedError
+{% if not runnable %}
+        raise NotImplementedError  # Remove this line once the computation is written.
 {%- endif %}
+        return outputs

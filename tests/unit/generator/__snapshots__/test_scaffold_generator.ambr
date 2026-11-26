@@ -17,11 +17,11 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_bus
-          inputs.a_panel
-          inputs.cd
-          inputs.f_thruster
-          inputs.h
+          _ = inputs.a_bus
+          _ = inputs.a_panel
+          _ = inputs.cd
+          _ = inputs.f_thruster
+          _ = inputs.h
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -32,7 +32,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -54,15 +55,15 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.d_min
-          inputs.eb_n0_req
-          inputs.f_carrier
-          inputs.g_rx
-          inputs.g_tx
-          inputs.h
-          inputs.p_tx
-          inputs.t_pass
-          inputs.t_sys
+          _ = inputs.d_min
+          _ = inputs.eb_n0_req
+          _ = inputs.f_carrier
+          _ = inputs.g_rx
+          _ = inputs.g_tx
+          _ = inputs.h
+          _ = inputs.p_tx
+          _ = inputs.t_pass
+          _ = inputs.t_sys
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -73,7 +74,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -95,9 +97,9 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.m_bus
-          inputs.specific_mass_panel
+          _ = inputs.a_panel
+          _ = inputs.m_bus
+          _ = inputs.specific_mass_panel
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -108,7 +110,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -130,14 +133,14 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.duty_cycle
-          inputs.eta_panel
-          inputs.f_sun
-          inputs.i_solar
-          inputs.p_payload
-          inputs.p_thruster
-          inputs.p_tx
+          _ = inputs.a_panel
+          _ = inputs.duty_cycle
+          _ = inputs.eta_panel
+          _ = inputs.f_sun
+          _ = inputs.i_solar
+          _ = inputs.p_payload
+          _ = inputs.p_thruster
+          _ = inputs.p_tx
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -148,7 +151,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -170,11 +174,11 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_bus
-          inputs.a_panel
-          inputs.cd
-          inputs.f_thruster
-          inputs.h
+          _ = inputs.a_bus
+          _ = inputs.a_panel
+          _ = inputs.cd
+          _ = inputs.f_thruster
+          _ = inputs.h
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -207,15 +211,15 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.d_min
-          inputs.eb_n0_req
-          inputs.f_carrier
-          inputs.g_rx
-          inputs.g_tx
-          inputs.h
-          inputs.p_tx
-          inputs.t_pass
-          inputs.t_sys
+          _ = inputs.d_min
+          _ = inputs.eb_n0_req
+          _ = inputs.f_carrier
+          _ = inputs.g_rx
+          _ = inputs.g_tx
+          _ = inputs.h
+          _ = inputs.p_tx
+          _ = inputs.t_pass
+          _ = inputs.t_sys
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -248,9 +252,9 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.m_bus
-          inputs.specific_mass_panel
+          _ = inputs.a_panel
+          _ = inputs.m_bus
+          _ = inputs.specific_mass_panel
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -283,14 +287,14 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.duty_cycle
-          inputs.eta_panel
-          inputs.f_sun
-          inputs.i_solar
-          inputs.p_payload
-          inputs.p_thruster
-          inputs.p_tx
+          _ = inputs.a_panel
+          _ = inputs.duty_cycle
+          _ = inputs.eta_panel
+          _ = inputs.f_sun
+          _ = inputs.i_solar
+          _ = inputs.p_payload
+          _ = inputs.p_thruster
+          _ = inputs.p_tx
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -307,6 +311,7 @@
 # ---
 # name: test_generate_scenario_executor_snapshot
   '''
+  # ruff: noqa: N999
   from pathlib import Path
   
   from gemseo.formulations.mdf_settings import MDF_Settings
@@ -351,6 +356,7 @@
 # ---
 # name: test_generate_scenario_loader_snapshot
   '''
+  # ruff: noqa: N999
   from pathlib import Path
   
   from gemseo.algos.optimization_problem import OptimizationProblem

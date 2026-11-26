@@ -1,14 +1,14 @@
+# ruff: noqa: N999
 from pathlib import Path
 
 {% for imp in formulation_imports -%}
 from {{ imp.module }} import {{ imp.cls }}
 {% endfor -%}
 {# Only algorithms that ship with core GEMSEO, so the scaffold runs without extras. -#}
-from gemseo.settings.opt import {% if root_has_sub_scenarios and not root_is_doe %}COBYQA_Settings, {% endif %}SLSQP_Settings
-{% if root_is_doe -%}
+from gemseo.settings.opt import COBYQA_Settings, SLSQP_Settings
 {# Not gemseo.settings.doe: it also imports the OpenTURNS settings, which need that extra. -#}
 from gemseo.algos.doe.scipy.settings.lhs import LHS_Settings
-{% endif %}
+
 {% for sc in scenarios -%}
 from {{ lib_package }}.{{ sc.name }} import (
     {{ sc.name }}Disciplines,

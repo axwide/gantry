@@ -1,3 +1,4 @@
+# ruff: noqa: N999
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -37,7 +38,7 @@ def construct_{{ scenario_name }}(
     sub_scenarios: {{ scenario_name }}SubScenarios,
 {%- endif %}
     design_space_path: Path = DESIGN_SPACE_PATH,
-    formulation_settings_model: (BaseFormulationSettings | None) = None,
+    formulation_settings_model: BaseFormulationSettings | None = None,
     **formulation_settings: Any,
 ) -> BaseScenario:
     # ------------------------ from the ProblemFormulation ----------------------- #
