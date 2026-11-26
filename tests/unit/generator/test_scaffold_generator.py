@@ -99,6 +99,28 @@ def test_generate_disciplines_vector_output_uses_np_zeros(tmp_path):
     assert "np.array([0.0])" not in content
 
 
+def test_generate_disciplines_import_order_ignores_cwd(
+    problem_def, lib_setup, tmp_path, monkeypatch
+):
+    """Scaffold imports sort the same whether or not lib is findable from the cwd.
+
+    The lib import always goes in its own first-party block after the third-party
+    one, which is where ruff's isort puts it in a standalone user project.
+    """
+    from gemseo_gantry.generator.scaffold_generator import generate_disciplines
+
+    lib_dir, import_root = lib_setup
+    contents = []
+    for cwd in (import_root, tmp_path):
+        monkeypatch.chdir(cwd)
+        out = tmp_path / f"out_{len(contents)}"
+        generate_disciplines(problem_def, out, lib_dir, import_root)
+        contents.append(sorted(p.read_text(encoding="utf-8") for p in out.iterdir()))
+
+    assert contents[0] == contents[1]
+    assert "StrKeyMapping\n\nfrom generated.lib." in contents[0][0]
+
+
 # -- generate_scenario_executor ------------------------------------------------
 
 

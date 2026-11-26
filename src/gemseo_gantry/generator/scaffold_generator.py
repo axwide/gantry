@@ -8,6 +8,7 @@ from gemseo_gantry.generator.lib_generator import (
     _format_code,
     discipline_base_filename,
     discipline_io_filename,
+    first_party_roots,
     lib_import_root,
     scenario_filename,
 )
@@ -175,7 +176,7 @@ def generate_disciplines(
             lib_package=lib_package,
             runnable=runnable,
         )
-        content = _format_code(content)
+        content = _format_code(content, first_party_roots(lib_package))
         file_path.write_text(content, encoding="utf-8")
         out.append(
             GeneratedArtifact(
@@ -289,7 +290,14 @@ def generate_scenario_executor(
                 for cls, module in formulation_imports.items()
             ],
         )
-        content = _format_code(content)
+        first_party = first_party_roots(lib_package) | first_party_roots(
+            discipline_package,
+            (
+                discipline_scaffold_filename(d).removesuffix(".py")
+                for d in plain_disc_names
+            ),
+        )
+        content = _format_code(content, first_party)
         file_path.write_text(content, encoding="utf-8")
         out.append(
             GeneratedArtifact(file_path, ArtifactKind.EXECUTOR, ArtifactStatus.WRITTEN)

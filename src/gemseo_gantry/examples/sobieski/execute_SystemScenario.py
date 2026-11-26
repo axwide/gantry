@@ -1,13 +1,14 @@
 # pyright: reportMissingImports=false
 from pathlib import Path
 
+from gemseo.formulations.bilevel_bcd_settings import BiLevel_BCD_Settings
+from gemseo.formulations.mdf_settings import MDF_Settings
+from gemseo.settings.opt import COBYQA_Settings, SLSQP_Settings
+
 from disciplines.Aerodynamics import Aerodynamics
 from disciplines.Mission import Mission
 from disciplines.Propulsion import Propulsion
 from disciplines.Structure import Structure
-from gemseo.formulations.bilevel_bcd_settings import BiLevel_BCD_Settings
-from gemseo.formulations.mdf_settings import MDF_Settings
-from gemseo.settings.opt import COBYQA_Settings, SLSQP_Settings
 from lib.AerodynamicsScenario import (
     AerodynamicsScenarioDisciplines,
     construct_AerodynamicsScenario,

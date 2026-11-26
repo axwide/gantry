@@ -1,6 +1,7 @@
 # pyright: reportMissingImports=false
 from gemseo.problems.mdo.sobieski.disciplines import SobieskiPropulsion
 from gemseo.typing import StrKeyMapping
+
 from lib.Propulsion_base import PropulsionBase
 from lib.Propulsion_io import PropulsionOutputs
 

@@ -295,11 +295,16 @@ def test_scenario_structure_and_construct(all_problem_defs, temp_generated_dir):
         assert isinstance(result, BaseScenario)
 
 
-# -- basedpyright on generated lib ----------------------------------------------
+# -- basedpyright on generated lib and scaffolds ---------------------------------
 
 
 def test_generated_lib_basedpyright_clean(tmp_path):
-    """Every generated lib/ passes basedpyright with no type errors.
+    """Every generated lib/ and its discipline scaffolds pass basedpyright.
+
+    The scaffolds are checked alongside the lib because they're the first
+    consumer of its API: they pass GEMSEO's ``input_data`` (a ``StrKeyMapping``)
+    to ``<Discipline>Inputs.from_dict``, so a too-narrow parameter type there
+    shows up as an error in every freshly scaffolded discipline.
 
     All fixtures are checked in a *single* basedpyright invocation rather than one
     subprocess per fixture: the type checker's cold start (and the surrounding
@@ -315,21 +320,46 @@ def test_generated_lib_basedpyright_clean(tmp_path):
       property setters defined on BaseDiscipline, but GEMSEO ships no type stubs so
       basedpyright cannot see the parent property and treats the assignments as creating
       new unannotated attributes - a false positive caused by missing stubs
+
+    The scaffolds get two more, scoped to their own execution environment, because
+    their placeholder body is meant to be rewritten by the user:
+    - reportUnusedVariable: ``outputs`` is built but not returned until the user
+      replaces ``raise NotImplementedError``
+    - reportImplicitOverride: ``_run`` has no ``@override``, a style choice left
+      to the user's project
     """
     import json
 
-    from gemseo_gantry.generator.lib_generator import generate_lib
+    from gemseo_gantry.generator.lib_generator import (
+        generate_discipline_scaffold,
+        generate_lib,
+    )
     from gemseo_gantry.parser.toml_parser import parse_toml
 
-    lib_dirs: list[Path] = []
+    project_dirs: list[Path] = []
+    environments: list[dict[str, object]] = []
     for toml_path in sorted(FIXTURES_DIR.glob("*.toml")):
-        generate_lib(parse_toml(toml_path), tmp_path / toml_path.stem)
-        lib_dirs.append(tmp_path / toml_path.stem / "lib")
+        problem = parse_toml(toml_path)
+        project_dir = tmp_path / toml_path.stem
+        generate_lib(problem, project_dir)
+        scaffold_dir = project_dir / "disciplines"
+        scaffold_dir.mkdir()
+        generate_discipline_scaffold(problem, scaffold_dir, lib_package="lib")
+        project_dirs.append(project_dir)
+        environments += [
+            {"root": str(project_dir / "lib")},
+            {
+                "root": str(scaffold_dir),
+                "extraPaths": [str(project_dir)],
+                "reportUnusedVariable": "none",
+                "reportImplicitOverride": "none",
+            },
+        ]
 
     config = {
         **PYRIGHT_SUPPRESS_RULES,
-        "include": [str(d) for d in lib_dirs],
-        "executionEnvironments": [{"root": str(d)} for d in lib_dirs],
+        "include": [str(d) for d in project_dirs],
+        "executionEnvironments": environments,
     }
     (tmp_path / "pyrightconfig.json").write_text(
         json.dumps(config),
@@ -344,7 +374,8 @@ def test_generated_lib_basedpyright_clean(tmp_path):
         cwd=str(PROJECT_ROOT),
     )
     assert result.returncode == 0, (
-        f"basedpyright found errors in generated libs:\n{result.stdout}\n{result.stderr}"
+        "basedpyright found errors in generated libs or scaffolds:\n"
+        f"{result.stdout}\n{result.stderr}"
     )
 
 

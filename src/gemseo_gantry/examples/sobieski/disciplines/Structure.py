@@ -1,6 +1,7 @@
 # pyright: reportMissingImports=false
 from gemseo.problems.mdo.sobieski.disciplines import SobieskiStructure
 from gemseo.typing import StrKeyMapping
+
 from lib.Structure_base import StructureBase
 from lib.Structure_io import StructureOutputs
 

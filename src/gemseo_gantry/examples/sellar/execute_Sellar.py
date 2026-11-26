@@ -1,11 +1,12 @@
 # pyright: reportMissingImports=false
 from pathlib import Path
 
+from gemseo.formulations.mdf_settings import MDF_Settings
+from gemseo.settings.opt import SLSQP_Settings
+
 from disciplines.Sellar1 import Sellar1
 from disciplines.Sellar2 import Sellar2
 from disciplines.SellarSystem import SellarSystem
-from gemseo.formulations.mdf_settings import MDF_Settings
-from gemseo.settings.opt import SLSQP_Settings
 from lib.Sellar import SellarDisciplines, construct_Sellar
 
 
