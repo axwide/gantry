@@ -1,11 +1,12 @@
+# ruff: noqa: N999
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from gemseo import create_scenario
 from gemseo.algos.design_space import DesignSpace
-from gemseo.core.discipline import Discipline
-from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
+{% if plain_disciplines %}from gemseo.core.discipline import Discipline
+{% endif %}from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
 from gemseo.scenarios.base_scenario import BaseScenario
 
 from .variables import Var

@@ -1,3 +1,4 @@
+# ruff: noqa: N999
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -6,11 +7,12 @@ from pathlib import Path
 {% if needs_any %}
 from typing import Any
 {% endif %}
+{% if needs_numpy %}
 import numpy as np
-from numpy.typing import NDArray
+{% endif %}from numpy.typing import NDArray
 
-from .variables import Var
-
+{% if input_fields or output_fields %}from .variables import Var
+{% endif %}
 GRAMMAR_DIR = Path(__file__).parent
 DISCIPLINE_NAME = "{{ discipline_name }}"
 

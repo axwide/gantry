@@ -314,8 +314,8 @@ def test_generated_lib_basedpyright_clean(tmp_path):
 
     The shared suppression rules silence upstream limitations in the generated lib:
     - reportMissingTypeStubs: gemseo ships no stubs
-    - reportMissingTypeArgument/reportAssignmentType: NDArrayPydantic used bare to
-      avoid pydantic runtime errors when GEMSEO passes numpy.float64 arrays
+    - reportMissingTypeArgument: NDArrayPydantic used bare to avoid pydantic
+      runtime errors when GEMSEO passes numpy.float64 arrays
     - reportUnannotatedClassAttribute: self.input_grammar / self.output_grammar invoke
       property setters defined on BaseDiscipline, but GEMSEO ships no type stubs so
       basedpyright cannot see the parent property and treats the assignments as creating
@@ -323,8 +323,8 @@ def test_generated_lib_basedpyright_clean(tmp_path):
 
     The scaffolds get two more, scoped to their own execution environment, because
     their placeholder body is meant to be rewritten by the user:
-    - reportUnusedVariable: ``outputs`` is built but not returned until the user
-      replaces ``raise NotImplementedError``
+    - reportUnreachable: ``return outputs`` follows ``raise NotImplementedError``
+      until the user deletes the raise
     - reportImplicitOverride: ``_run`` has no ``@override``, a style choice left
       to the user's project
     """
@@ -351,7 +351,7 @@ def test_generated_lib_basedpyright_clean(tmp_path):
             {
                 "root": str(scaffold_dir),
                 "extraPaths": [str(project_dir)],
-                "reportUnusedVariable": "none",
+                "reportUnreachable": "none",
                 "reportImplicitOverride": "none",
             },
         ]
@@ -377,6 +377,48 @@ def test_generated_lib_basedpyright_clean(tmp_path):
         "basedpyright found errors in generated libs or scaffolds:\n"
         f"{result.stdout}\n{result.stderr}"
     )
+
+
+@pytest.mark.parametrize("runnable", [False, True])
+def test_generated_project_ruff_clean(tmp_path, runnable):
+    """Generated lib/ and scaffolds pass ruff's default rules with no config.
+
+    ``--isolated`` ignores this repo's ruff settings, so the check matches what a
+    user sees in a fresh project. File names follow discipline and scenario names
+    (``Aero_base.py``), so generated modules carry their own ``N999`` exemption.
+    """
+    from gemseo_gantry.generator.lib_generator import generate_lib
+    from gemseo_gantry.generator.scaffold_generator import generate_scaffold
+    from gemseo_gantry.parser.toml_parser import parse_toml
+
+    project_dirs: list[Path] = []
+    for toml_path in sorted(FIXTURES_DIR.glob("*.toml")):
+        problem = parse_toml(toml_path)
+        project_dir = tmp_path / toml_path.stem
+        generate_lib(problem, project_dir)
+        generate_scaffold(
+            problem,
+            disciplines_into=project_dir / "disciplines",
+            lib_dir=project_dir / "lib",
+            import_root=project_dir,
+            runnable=runnable,
+        )
+        project_dirs.append(project_dir)
+
+    # Run from each project root so ruff sees lib/ and disciplines/ as first-party,
+    # as it would in the user's project.
+    for project_dir in project_dirs:
+        result = subprocess.run(
+            [sys.executable, "-m", "ruff", "check", "--isolated", "."],
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd=str(project_dir),
+        )
+        assert result.returncode == 0, (
+            f"ruff found problems in {project_dir.name}:\n"
+            f"{result.stdout}\n{result.stderr}"
+        )
 
 
 # -- Grammar field defaults ------------------------------------------------------

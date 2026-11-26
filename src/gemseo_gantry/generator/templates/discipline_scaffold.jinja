@@ -1,22 +1,28 @@
-import numpy as np
-from gemseo.typing import StrKeyMapping
+{% if outputs %}import numpy as np
+{% endif %}from gemseo.typing import StrKeyMapping
 
 from {{ lib_package }}.{{ discipline_name }}_base import {{ discipline_name }}Base
 from {{ lib_package }}.{{ discipline_name }}_io import (
+{%- if inputs %}
     {{ discipline_name }}Inputs,
+{%- endif %}
     {{ discipline_name }}Outputs,
 )
 
 
 class {{ discipline_name }}({{ discipline_name }}Base):
     def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+{%- if inputs %}
         inputs = {{ discipline_name }}Inputs.from_dict(input_data)
+{%- endif %}
 
         # -------------------- Start of your analysis computation -------------------- #
+{%- if inputs %}
         # Access input variables via the 'inputs' object, e.g.:
 {%- for input in inputs %}
-        inputs.{{ input }}
+        _ = inputs.{{ input }}
 {%- endfor %}
+{%- endif %}
 
         # Replace with actual computation
 {%- for output in outputs %}
@@ -30,8 +36,7 @@ class {{ discipline_name }}({{ discipline_name }}Base):
 {%- endfor %}
         )
         # --------------------- End of your analysis computation --------------------- #
-{% if runnable %}
-        return outputs
-{%- else %}
-        raise NotImplementedError
+{% if not runnable %}
+        raise NotImplementedError  # Remove this line once the computation is written.
 {%- endif %}
+        return outputs

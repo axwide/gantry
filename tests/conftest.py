@@ -17,7 +17,6 @@ PYRIGHT_SUPPRESS_RULES: dict[str, str] = {
     "reportAny": "none",
     "reportExplicitAny": "none",
     "reportMissingTypeArgument": "none",
-    "reportAssignmentType": "none",
     "reportUnannotatedClassAttribute": "none",
     "reportUnusedImport": "none",
     "reportUnusedParameter": "none",

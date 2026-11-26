@@ -284,6 +284,7 @@ def generate_discipline_grammars(
             has_defaults=has_defaults,
             needs_numpy=needs_numpy,
             needs_field=needs_field,
+            needs_ndarray=bool(input_fields or output_fields),
         )
         content = _format_code(content)
         file_path = output_dir / f"{discipline.name}_grammar.py"
@@ -369,6 +370,15 @@ def generate_discipline_io(
             inputs_dict_type=inputs_dict_type,
             outputs_dict_type=outputs_dict_type,
             needs_any="Any" in (inputs_dict_type, outputs_dict_type),
+            # A discipline with no variables at all types nothing with numpy.
+            needs_numpy=any(
+                t.startswith("np.")
+                for t in (
+                    inputs_dict_type,
+                    outputs_dict_type,
+                    *(f["np_type"] for f in input_fields + output_fields),
+                )
+            ),
         )
         content = _format_code(content)
         file_path = output_dir / discipline_io_filename(discipline.name)

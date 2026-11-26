@@ -10,6 +10,7 @@
 # ---
 # name: test_generate_discipline_bases[Drag]
   '''
+  # ruff: noqa: N999
   from abc import ABC
   
   from gemseo.core.discipline import Discipline
@@ -36,6 +37,7 @@
 # ---
 # name: test_generate_discipline_bases[Link]
   '''
+  # ruff: noqa: N999
   from abc import ABC
   
   from gemseo.core.discipline import Discipline
@@ -62,6 +64,7 @@
 # ---
 # name: test_generate_discipline_bases[Mass]
   '''
+  # ruff: noqa: N999
   from abc import ABC
   
   from gemseo.core.discipline import Discipline
@@ -88,6 +91,7 @@
 # ---
 # name: test_generate_discipline_bases[Power]
   '''
+  # ruff: noqa: N999
   from abc import ABC
   
   from gemseo.core.discipline import Discipline
@@ -114,6 +118,10 @@
 # ---
 # name: test_generate_discipline_grammars[Drag]
   '''
+  # ruff: noqa: N999
+  
+  from typing import cast
+  
   import numpy as np
   from gemseo.utils.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
@@ -121,26 +129,28 @@
   
   class DragInputGrammar(BaseModel):
       a_bus: NDArrayPydantic = Field(
-          description="Bus frontal area [m2]", default_factory=lambda: np.array([0.1])
+          description="Bus frontal area [m2]",
+          default_factory=lambda: cast("NDArrayPydantic", np.array([0.1])),
       )
   
       a_panel: NDArrayPydantic = Field(
-          description="Solar array area [m2]", default_factory=lambda: np.array([1.0])
+          description="Solar array area [m2]",
+          default_factory=lambda: cast("NDArrayPydantic", np.array([1.0])),
       )
   
       cd: NDArrayPydantic = Field(
           description="Satellite drag coefficient [-]",
-          default_factory=lambda: np.array([2.2]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([2.2])),
       )
   
       f_thruster: NDArrayPydantic = Field(
           description="Max thruster thrust (5 mN electric propulsion) [N]",
-          default_factory=lambda: np.array([0.005]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([0.005])),
       )
   
       h: NDArrayPydantic = Field(
           description="Orbital altitude (VLEO range) [km]",
-          default_factory=lambda: np.array([300.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([300.0])),
       )
   
   
@@ -153,6 +163,10 @@
 # ---
 # name: test_generate_discipline_grammars[Link]
   '''
+  # ruff: noqa: N999
+  
+  from typing import cast
+  
   import numpy as np
   from gemseo.utils.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
@@ -161,46 +175,47 @@
   class LinkInputGrammar(BaseModel):
       d_min: NDArrayPydantic = Field(
           description="Required data volume per ground pass [Gbit]",
-          default_factory=lambda: np.array([0.05]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([0.05])),
       )
   
       eb_n0_req: NDArrayPydantic = Field(
           description="Required Eb/N0 (QPSK with rate-1/2 coding) [dB]",
-          default_factory=lambda: np.array([6.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([6.0])),
       )
   
       f_carrier: NDArrayPydantic = Field(
           description="Downlink carrier frequency (Ka-band) [GHz]",
-          default_factory=lambda: np.array([26.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([26.0])),
       )
   
       g_rx: NDArrayPydantic = Field(
           description="Ground station receive antenna gain [dBi]",
-          default_factory=lambda: np.array([20.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([20.0])),
       )
   
       g_tx: NDArrayPydantic = Field(
           description="Satellite transmit antenna gain [dBi]",
-          default_factory=lambda: np.array([0.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([0.0])),
       )
   
       h: NDArrayPydantic = Field(
           description="Orbital altitude (VLEO range) [km]",
-          default_factory=lambda: np.array([300.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([300.0])),
       )
   
       p_tx: NDArrayPydantic = Field(
-          description="Transmit power [W]", default_factory=lambda: np.array([5.0])
+          description="Transmit power [W]",
+          default_factory=lambda: cast("NDArrayPydantic", np.array([5.0])),
       )
   
       t_pass: NDArrayPydantic = Field(
           description="Ground station contact time per pass [min]",
-          default_factory=lambda: np.array([10.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([10.0])),
       )
   
       t_sys: NDArrayPydantic = Field(
           description="Ground station system noise temperature [K]",
-          default_factory=lambda: np.array([290.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([290.0])),
       )
   
   
@@ -213,6 +228,10 @@
 # ---
 # name: test_generate_discipline_grammars[Mass]
   '''
+  # ruff: noqa: N999
+  
+  from typing import cast
+  
   import numpy as np
   from gemseo.utils.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
@@ -220,17 +239,18 @@
   
   class MassInputGrammar(BaseModel):
       a_panel: NDArrayPydantic = Field(
-          description="Solar array area [m2]", default_factory=lambda: np.array([1.0])
+          description="Solar array area [m2]",
+          default_factory=lambda: cast("NDArrayPydantic", np.array([1.0])),
       )
   
       m_bus: NDArrayPydantic = Field(
           description="Bus dry mass (excluding solar array) [kg]",
-          default_factory=lambda: np.array([50.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([50.0])),
       )
   
       specific_mass_panel: NDArrayPydantic = Field(
           description="Solar array areal mass density [kg/m2]",
-          default_factory=lambda: np.array([1.5]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([1.5])),
       )
   
   
@@ -243,6 +263,10 @@
 # ---
 # name: test_generate_discipline_grammars[Power]
   '''
+  # ruff: noqa: N999
+  
+  from typing import cast
+  
   import numpy as np
   from gemseo.utils.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
@@ -250,7 +274,8 @@
   
   class PowerInputGrammar(BaseModel):
       a_panel: NDArrayPydantic = Field(
-          description="Solar array area [m2]", default_factory=lambda: np.array([1.0])
+          description="Solar array area [m2]",
+          default_factory=lambda: cast("NDArrayPydantic", np.array([1.0])),
       )
   
       duty_cycle: NDArrayPydantic = Field(
@@ -259,30 +284,32 @@
   
       eta_panel: NDArrayPydantic = Field(
           description="Solar cell efficiency [-]",
-          default_factory=lambda: np.array([0.28]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([0.28])),
       )
   
       f_sun: NDArrayPydantic = Field(
           description="Representative sunlit fraction per orbit [-]",
-          default_factory=lambda: np.array([0.6]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([0.6])),
       )
   
       i_solar: NDArrayPydantic = Field(
           description="Solar irradiance [W/m2]",
-          default_factory=lambda: np.array([1361.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([1361.0])),
       )
   
       p_payload: NDArrayPydantic = Field(
-          description="Payload power draw [W]", default_factory=lambda: np.array([30.0])
+          description="Payload power draw [W]",
+          default_factory=lambda: cast("NDArrayPydantic", np.array([30.0])),
       )
   
       p_thruster: NDArrayPydantic = Field(
           description="Thruster input power at full thrust [W]",
-          default_factory=lambda: np.array([200.0]),
+          default_factory=lambda: cast("NDArrayPydantic", np.array([200.0])),
       )
   
       p_tx: NDArrayPydantic = Field(
-          description="Transmit power [W]", default_factory=lambda: np.array([5.0])
+          description="Transmit power [W]",
+          default_factory=lambda: cast("NDArrayPydantic", np.array([5.0])),
       )
   
   
@@ -295,6 +322,7 @@
 # ---
 # name: test_generate_discipline_io[Drag]
   '''
+  # ruff: noqa: N999
   from __future__ import annotations
   
   from collections.abc import Mapping
@@ -344,6 +372,7 @@
 # ---
 # name: test_generate_discipline_io[Link]
   '''
+  # ruff: noqa: N999
   from __future__ import annotations
   
   from collections.abc import Mapping
@@ -401,6 +430,7 @@
 # ---
 # name: test_generate_discipline_io[Mass]
   '''
+  # ruff: noqa: N999
   from __future__ import annotations
   
   from collections.abc import Mapping
@@ -446,6 +476,7 @@
 # ---
 # name: test_generate_discipline_io[Power]
   '''
+  # ruff: noqa: N999
   from __future__ import annotations
   
   from collections.abc import Mapping
@@ -517,11 +548,11 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_bus
-          inputs.a_panel
-          inputs.cd
-          inputs.f_thruster
-          inputs.h
+          _ = inputs.a_bus
+          _ = inputs.a_panel
+          _ = inputs.cd
+          _ = inputs.f_thruster
+          _ = inputs.h
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -532,7 +563,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -554,15 +586,15 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.d_min
-          inputs.eb_n0_req
-          inputs.f_carrier
-          inputs.g_rx
-          inputs.g_tx
-          inputs.h
-          inputs.p_tx
-          inputs.t_pass
-          inputs.t_sys
+          _ = inputs.d_min
+          _ = inputs.eb_n0_req
+          _ = inputs.f_carrier
+          _ = inputs.g_rx
+          _ = inputs.g_tx
+          _ = inputs.h
+          _ = inputs.p_tx
+          _ = inputs.t_pass
+          _ = inputs.t_sys
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -573,7 +605,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -595,9 +628,9 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.m_bus
-          inputs.specific_mass_panel
+          _ = inputs.a_panel
+          _ = inputs.m_bus
+          _ = inputs.specific_mass_panel
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -608,7 +641,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -630,14 +664,14 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.duty_cycle
-          inputs.eta_panel
-          inputs.f_sun
-          inputs.i_solar
-          inputs.p_payload
-          inputs.p_thruster
-          inputs.p_tx
+          _ = inputs.a_panel
+          _ = inputs.duty_cycle
+          _ = inputs.eta_panel
+          _ = inputs.f_sun
+          _ = inputs.i_solar
+          _ = inputs.p_payload
+          _ = inputs.p_thruster
+          _ = inputs.p_tx
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -648,7 +682,8 @@
           )
           # --------------------- End of your analysis computation --------------------- #
   
-          raise NotImplementedError
+          raise NotImplementedError  # Remove this line once the computation is written.
+          return outputs
   
   '''
 # ---
@@ -670,11 +705,11 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_bus
-          inputs.a_panel
-          inputs.cd
-          inputs.f_thruster
-          inputs.h
+          _ = inputs.a_bus
+          _ = inputs.a_panel
+          _ = inputs.cd
+          _ = inputs.f_thruster
+          _ = inputs.h
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -707,15 +742,15 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.d_min
-          inputs.eb_n0_req
-          inputs.f_carrier
-          inputs.g_rx
-          inputs.g_tx
-          inputs.h
-          inputs.p_tx
-          inputs.t_pass
-          inputs.t_sys
+          _ = inputs.d_min
+          _ = inputs.eb_n0_req
+          _ = inputs.f_carrier
+          _ = inputs.g_rx
+          _ = inputs.g_tx
+          _ = inputs.h
+          _ = inputs.p_tx
+          _ = inputs.t_pass
+          _ = inputs.t_sys
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -748,9 +783,9 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.m_bus
-          inputs.specific_mass_panel
+          _ = inputs.a_panel
+          _ = inputs.m_bus
+          _ = inputs.specific_mass_panel
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -783,14 +818,14 @@
   
           # -------------------- Start of your analysis computation -------------------- #
           # Access input variables via the 'inputs' object, e.g.:
-          inputs.a_panel
-          inputs.duty_cycle
-          inputs.eta_panel
-          inputs.f_sun
-          inputs.i_solar
-          inputs.p_payload
-          inputs.p_thruster
-          inputs.p_tx
+          _ = inputs.a_panel
+          _ = inputs.duty_cycle
+          _ = inputs.eta_panel
+          _ = inputs.f_sun
+          _ = inputs.i_solar
+          _ = inputs.p_payload
+          _ = inputs.p_thruster
+          _ = inputs.p_tx
   
           # Replace with actual computation
           out1 = np.zeros(1)
@@ -807,6 +842,7 @@
 # ---
 # name: test_generate_scenario
   '''
+  # ruff: noqa: N999
   from dataclasses import dataclass
   from pathlib import Path
   from typing import Any
