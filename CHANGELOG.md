@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/axwide/gantry/compare/v0.1.1...v0.1.2) (2026-11-26)
+
+
+### Bug Fixes
+
+* lint-clean generated code, formatted with ruff instead of black and isort ([#34](https://github.com/axwide/gantry/issues/34)) ([058ebb5](https://github.com/axwide/gantry/commit/058ebb5651756e1419899b04a6148d7e2a4e62ee))
+* type-clean from_dict and cwd-independent import sorting in generated code ([#31](https://github.com/axwide/gantry/issues/31)) ([28e0a53](https://github.com/axwide/gantry/commit/28e0a53830cda0d225ac31b74627dd5fb4d79475))
+
 ## [0.1.1](https://github.com/axwide/gantry/compare/v0.1.0...v0.1.1) (2026-11-18)
 
 
