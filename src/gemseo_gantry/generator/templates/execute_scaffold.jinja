@@ -1,13 +1,10 @@
 # ruff: noqa: N999
 from pathlib import Path
 
-{% for imp in formulation_imports -%}
-from {{ imp.module }} import {{ imp.cls }}
-{% endfor -%}
+from gemseo.formulation import {{ formulation_imports|join(', ') }}
 {# Only algorithms that ship with core GEMSEO, so the scaffold runs without extras. -#}
-from gemseo.settings.opt import COBYQA_Settings, SLSQP_Settings
-{# Not gemseo.settings.doe: it also imports the OpenTURNS settings, which need that extra. -#}
-from gemseo.algos.doe.scipy.settings.lhs import LHS_Settings
+from gemseo.optimization import COBYQA_Settings, SLSQP_Settings
+from gemseo.doe import LHS_Settings
 
 {% for sc in scenarios -%}
 from {{ lib_package }}.{{ sc.name }} import (
@@ -59,7 +56,7 @@ def execute_{{ root_name }}():
 
 def main() -> None:
     scenario = execute_{{ root_name }}()
-    scenario.save_optimization_history(Path(__file__).parent / "{{ root_name }}.h5")
+    scenario.to_hdf(Path(__file__).parent / "{{ root_name }}.h5")
 
 
 if __name__ == "__main__":

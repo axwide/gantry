@@ -7,9 +7,7 @@ from gemseo_gantry.generator.scaffold_generator import (
 )
 from gemseo_gantry.validation.pipeline import validate_toml
 
-SOBIESKI = (
-    Path(__file__).parents[3] / "src/gemseo_gantry/examples/sobieski/sobieski.toml"
-)
+SOBIESKI = Path(__file__).parents[2] / "fixtures/sobieski.toml"
 
 
 def test_nested_lib_emits_subscenarios_dataclass(tmp_path: Path):
@@ -17,9 +15,9 @@ def test_nested_lib_emits_subscenarios_dataclass(tmp_path: Path):
     generate_lib(problem, tmp_path)
     system_src = (tmp_path / "lib" / "SystemScenario.py").read_text()
     assert "class SystemScenarioSubScenarios:" in system_src
-    assert "StructureScenario: BaseScenario" in system_src
-    assert "AerodynamicsScenario: BaseScenario" in system_src
-    assert "PropulsionScenario: BaseScenario" in system_src
+    assert "StructureScenario: MDOScenario" in system_src
+    assert "AerodynamicsScenario: MDOScenario" in system_src
+    assert "PropulsionScenario: MDOScenario" in system_src
     assert "Mission: Discipline" in system_src
 
 

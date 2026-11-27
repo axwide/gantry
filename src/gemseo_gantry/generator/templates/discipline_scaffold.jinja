@@ -1,5 +1,5 @@
 import numpy as np
-from gemseo.typing import StrKeyMapping
+from gemseo.util.typing import StrKeyMapping
 
 from {{ lib_package }}.{{ discipline_name }}_base import {{ discipline_name }}Base
 from {{ lib_package }}.{{ discipline_name }}_io import (
@@ -9,7 +9,7 @@ from {{ lib_package }}.{{ discipline_name }}_io import (
 
 
 class {{ discipline_name }}({{ discipline_name }}Base):
-    def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+    def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
         inputs = {{ discipline_name }}Inputs.from_dict(input_data)
 
         # -------------------- Start of your analysis computation -------------------- #

@@ -1,8 +1,8 @@
 # ruff: noqa: N999
 from abc import ABC
 
-from gemseo.core.discipline import Discipline
-from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+from gemseo.discipline import Discipline
+from gemseo.core.grammar.pydantic import PydanticGrammar
 
 from .{{ discipline_name }}_grammar import (
     {{ discipline_name }}InputGrammar,

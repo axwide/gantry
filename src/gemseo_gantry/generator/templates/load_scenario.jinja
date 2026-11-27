@@ -1,7 +1,7 @@
 # ruff: noqa: N999
 from pathlib import Path
 
-from gemseo.algos.optimization_problem import OptimizationProblem
+from gemseo.optimization import OptimizationProblem
 
 problem = OptimizationProblem.from_hdf(Path(__file__).parent / "{{ scenario_name }}.h5")
 dataset = problem.to_dataset()
@@ -10,7 +10,7 @@ meta = dataset.misc["optimization_metadata"]
 print("Objective:          ", meta.objective_name)
 print("Optimum iteration:  ", meta.optimum_iteration)
 print("Feasible iterations:", meta.feasible_iterations)
-print("Constraints:        ", meta.output_names_to_constraint_names)
+print("Constraints:        ", meta.output_name_to_constraint_names)
 print("Solution:           ", problem.solution)
 print()
 print(dataset)

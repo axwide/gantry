@@ -175,7 +175,7 @@ def test_array_dimensioned_design_space_round_trips_through_gemseo(temp_generate
     """A dimension>1 design variable's design_space.csv reconstructs to the
     correct size, bounds, and current value via GEMSEO's DesignSpace.from_csv -
     confirming the repeated-row CSV layout is GEMSEO-compatible."""
-    from gemseo.algos.design_space import DesignSpace
+    from gemseo.space import DesignSpace
 
     from gemseo_gantry.generator.lib_generator import generate_design_space
     from gemseo_gantry.parser.toml_parser import parse_toml
@@ -188,9 +188,11 @@ def test_array_dimensioned_design_space_round_trips_through_gemseo(temp_generate
         delimiter=",",
     )
 
-    assert design_space.get_size("x") == 3
-    np.testing.assert_array_equal(design_space.get_lower_bound("x"), [0.0, 0.0, 0.0])
-    np.testing.assert_array_equal(design_space.get_upper_bound("x"), [10.0, 10.0, 10.0])
+    assert design_space.variables["x"].size == 3
+    np.testing.assert_array_equal(design_space.get_lower_bounds(["x"]), [0.0, 0.0, 0.0])
+    np.testing.assert_array_equal(
+        design_space.get_upper_bounds(["x"]), [10.0, 10.0, 10.0]
+    )
     np.testing.assert_array_equal(
         design_space.get_current_value(["x"]), [1.0, 2.0, 3.0]
     )
@@ -201,7 +203,7 @@ def test_design_space_missing_bounds_round_trip_to_infinity(temp_generated_dir):
 
     Omitted lower/upper bounds map to -inf/+inf.
     """
-    from gemseo.algos.design_space import DesignSpace
+    from gemseo.space import DesignSpace
 
     from gemseo_gantry.generator.lib_generator import generate_design_space
     from gemseo_gantry.model.data_model import (
@@ -228,8 +230,8 @@ def test_design_space_missing_bounds_round_trip_to_infinity(temp_generated_dir):
     generate_design_space(problem, temp_generated_dir)
 
     ds = DesignSpace.from_csv(temp_generated_dir / "design_space.csv", delimiter=",")
-    assert ds.get_lower_bound("x") == np.array([-np.inf])
-    assert ds.get_upper_bound("x") == np.array([np.inf])
+    assert ds.get_lower_bounds(["x"]) == np.array([-np.inf])
+    assert ds.get_upper_bounds(["x"]) == np.array([np.inf])
     np.testing.assert_array_equal(ds.get_current_value(["x"]), np.array([5.0]))
 
 
@@ -237,7 +239,7 @@ def test_design_space_missing_bounds_round_trip_to_infinity(temp_generated_dir):
 
 
 def test_scenario_structure_and_construct(all_problem_defs, temp_generated_dir):
-    """Generated scenario module exposes construct_* + *Disciplines and returns a BaseScenario."""
+    """Generated scenario module exposes construct_* + *Disciplines and returns an MDOScenario."""
     if not all_problem_defs.scenarios:
         pytest.skip("fixture has no scenarios")
     scenario_names = {s.name for s in all_problem_defs.scenarios}
@@ -246,8 +248,8 @@ def test_scenario_structure_and_construct(all_problem_defs, temp_generated_dir):
         # discipline list; constructing them is out of scope here.
         pytest.skip("fixture has nested scenarios")
 
-    from gemseo.formulations.mdf_settings import MDF_Settings
-    from gemseo.scenarios.base_scenario import BaseScenario
+    from gemseo.formulation import MDF_Settings
+    from gemseo.scenario import MDOScenario
 
     from gemseo_gantry.generator.lib_generator import (
         generate_design_space,
@@ -292,7 +294,7 @@ def test_scenario_structure_and_construct(all_problem_defs, temp_generated_dir):
             disciplines=DisciplinesClass(**disc_kwargs),
             formulation_settings_model=MDF_Settings(),
         )
-        assert isinstance(result, BaseScenario)
+        assert isinstance(result, MDOScenario)
 
 
 # -- basedpyright on generated lib and scaffolds ---------------------------------
@@ -817,18 +819,19 @@ def test_generated_executor_runs_scenario_end_to_end(
     )
     # generate_scenario_executor creates __init__.py in scenarios_dir automatically
 
-    from gemseo.scenarios.base_scenario import BaseScenario
+    from gemseo.scenario import MDOScenario
 
     sys.path.insert(0, str(import_root))
     imported = []
     try:
-        for scenario in all_problem_defs.scenarios:
+        # Only root scenarios get an executor; it constructs their sub-scenarios.
+        for scenario in all_problem_defs.root_scenarios:
             mod_name = f"scenarios.execute_{scenario.name}"
             mod = importlib.import_module(mod_name)
             imported.append(mod_name)
             execute_fn = getattr(mod, f"execute_{scenario.name}")
             result_scenario = execute_fn()
-            assert isinstance(result_scenario, BaseScenario)
+            assert isinstance(result_scenario, MDOScenario)
     finally:
         for mod_name in imported:
             sys.modules.pop(mod_name, None)

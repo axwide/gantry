@@ -2,9 +2,9 @@
 # name: test_generate_design_space
   '''
   name,lower_bound,value,upper_bound,type
-  h,200.0,300.0,450.0,float
-  a_panel,0.1,1.0,5.0,float
-  p_tx,0.5,5.0,50.0,float
+  h,200.0,300.0,450.0,real
+  a_panel,0.1,1.0,5.0,real
+  p_tx,0.5,5.0,50.0,real
   
   '''
 # ---
@@ -13,8 +13,8 @@
   # ruff: noqa: N999
   from abc import ABC
   
-  from gemseo.core.discipline import Discipline
-  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  from gemseo.core.grammar.pydantic import PydanticGrammar
+  from gemseo.discipline import Discipline
   
   from .Drag_grammar import (
       DragInputGrammar,
@@ -40,8 +40,8 @@
   # ruff: noqa: N999
   from abc import ABC
   
-  from gemseo.core.discipline import Discipline
-  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  from gemseo.core.grammar.pydantic import PydanticGrammar
+  from gemseo.discipline import Discipline
   
   from .Link_grammar import (
       LinkInputGrammar,
@@ -67,8 +67,8 @@
   # ruff: noqa: N999
   from abc import ABC
   
-  from gemseo.core.discipline import Discipline
-  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  from gemseo.core.grammar.pydantic import PydanticGrammar
+  from gemseo.discipline import Discipline
   
   from .Mass_grammar import (
       MassInputGrammar,
@@ -94,8 +94,8 @@
   # ruff: noqa: N999
   from abc import ABC
   
-  from gemseo.core.discipline import Discipline
-  from gemseo.core.grammars.pydantic_grammar import PydanticGrammar
+  from gemseo.core.grammar.pydantic import PydanticGrammar
+  from gemseo.discipline import Discipline
   
   from .Power_grammar import (
       PowerInputGrammar,
@@ -122,7 +122,7 @@
   from typing import cast
   
   import numpy as np
-  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from gemseo.util.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
   
   
@@ -166,7 +166,7 @@
   from typing import cast
   
   import numpy as np
-  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from gemseo.util.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
   
   
@@ -230,7 +230,7 @@
   from typing import cast
   
   import numpy as np
-  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from gemseo.util.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
   
   
@@ -264,7 +264,7 @@
   from typing import cast
   
   import numpy as np
-  from gemseo.utils.pydantic_ndarray import NDArrayPydantic
+  from gemseo.util.pydantic_ndarray import NDArrayPydantic
   from pydantic import BaseModel, Field
   
   
@@ -529,7 +529,7 @@
 # name: test_generate_discipline_scaffold[Drag]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Drag_base import DragBase
   from generated.Drag_io import (
@@ -539,7 +539,7 @@
   
   
   class Drag(DragBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = DragInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -567,7 +567,7 @@
 # name: test_generate_discipline_scaffold[Link]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Link_base import LinkBase
   from generated.Link_io import (
@@ -577,7 +577,7 @@
   
   
   class Link(LinkBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = LinkInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -609,7 +609,7 @@
 # name: test_generate_discipline_scaffold[Mass]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Mass_base import MassBase
   from generated.Mass_io import (
@@ -619,7 +619,7 @@
   
   
   class Mass(MassBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = MassInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -645,7 +645,7 @@
 # name: test_generate_discipline_scaffold[Power]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Power_base import PowerBase
   from generated.Power_io import (
@@ -655,7 +655,7 @@
   
   
   class Power(PowerBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = PowerInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -686,7 +686,7 @@
 # name: test_generate_discipline_scaffold_runnable[Drag]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Drag_base import DragBase
   from generated.Drag_io import (
@@ -696,7 +696,7 @@
   
   
   class Drag(DragBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = DragInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -723,7 +723,7 @@
 # name: test_generate_discipline_scaffold_runnable[Link]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Link_base import LinkBase
   from generated.Link_io import (
@@ -733,7 +733,7 @@
   
   
   class Link(LinkBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = LinkInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -764,7 +764,7 @@
 # name: test_generate_discipline_scaffold_runnable[Mass]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Mass_base import MassBase
   from generated.Mass_io import (
@@ -774,7 +774,7 @@
   
   
   class Mass(MassBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = MassInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -799,7 +799,7 @@
 # name: test_generate_discipline_scaffold_runnable[Power]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.Power_base import PowerBase
   from generated.Power_io import (
@@ -809,7 +809,7 @@
   
   
   class Power(PowerBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = PowerInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -844,10 +844,10 @@
   from typing import Any
   
   from gemseo import create_scenario
-  from gemseo.algos.design_space import DesignSpace
-  from gemseo.core.discipline import Discipline
-  from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
-  from gemseo.scenarios.base_scenario import BaseScenario
+  from gemseo.discipline import Discipline
+  from gemseo.formulation.core.base_settings import BaseFormulationSettings
+  from gemseo.scenario import MDOScenario
+  from gemseo.space import DesignSpace
   
   from .variables import Var
   
@@ -869,7 +869,7 @@
       design_space_path: Path = DESIGN_SPACE_PATH,
       formulation_settings_model: BaseFormulationSettings | None = None,
       **formulation_settings: Any,
-  ) -> BaseScenario:
+  ) -> MDOScenario:
       # ------------------------ from the ProblemFormulation ----------------------- #
       scenario_name = "Vleo"
       scenario_type = "MDO"

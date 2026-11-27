@@ -13,4 +13,4 @@ def test_module_runs_as_main():
     )
     assert result.returncode == 0, result.stderr
     assert "Usage" in result.stdout
-    assert "example" in result.stdout
+    assert "scaffold" in result.stdout

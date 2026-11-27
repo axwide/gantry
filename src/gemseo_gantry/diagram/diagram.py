@@ -4,8 +4,8 @@ from pathlib import Path
 
 from gemseo import create_design_space, create_scenario, generate_n2_plot
 from gemseo.core.coupling_structure import CouplingStructure
-from gemseo.scenarios.base_scenario import BaseScenario
-from gemseo.utils.discipline import DummyDiscipline
+from gemseo.scenario import MDOScenario
+from gemseo.util.discipline import DummyDiscipline
 
 from gemseo_gantry.model.data_model import Discipline, ProblemDefinition, Scenario
 
@@ -31,7 +31,7 @@ def _build_dummy_scenario(
     scenario_def: Scenario,
     disc_map: dict[str, Discipline],
     scen_map: dict[str, Scenario],
-) -> BaseScenario:
+) -> MDOScenario:
     """Build a GEMSEO scenario of dummy disciplines mirroring the nesting.
 
     Real disciplines become ``DummyDiscipline`` instances and each sub-scenario

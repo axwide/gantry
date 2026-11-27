@@ -18,7 +18,6 @@ Every command that reads a problem definition takes an optional path to the TOML
 | [`validate`](#validate) | read-only | Parse and cross-validate the problem. |
 | [`build`](#build) | **destructive** | Validate, then (re)build the disposable `lib/` package. |
 | [`scaffold`](#scaffold) | **write-once** | Write user-owned discipline, executor, and loader seeds. |
-| [`example`](#example) | write-once | Generate a complete, runnable example project. |
 | [`schema`](#schema) | write-once | Write the JSON Schema for problem-definition TOML files. |
 | [`diagram`](#diagram) | read-only | Draw N2 or XDSM diagrams of the coupling topology. |
 
@@ -68,19 +67,6 @@ Writes seed files that you own. Existing files are skipped unless `--force` is g
 | `--import-root` | The `sys.path` root used to compute the absolute import paths baked into the seeds (default: the current directory). |
 | `--only` | Generate only some artifacts: `d`/`disciplines`, `e`/`executor`, `l`/`loader`. Repeat or comma-separate, e.g. `--only d,e`. |
 | `--runnable` | Generate discipline stubs that return placeholder outputs, so the executor runs end to end before any physics is written. |
-
-### `example`
-
-```bash
-gantry example {sellar|sobieski} [PATH] [--explain] [--dump-toml]
-```
-
-Generates a complete, runnable example project in a new `<name>/` directory under `PATH` (default: the current directory): Sellar, the canonical small MDO benchmark, or Sobieski's supersonic business jet, a larger bilevel problem.
-
-| Option | Description |
-|---|---|
-| `--explain` | Narrate the generation workflow stage by stage. |
-| `--dump-toml` | Write only the example's problem definition TOML. |
 
 ### `schema`
 

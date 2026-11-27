@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.markup import escape
@@ -16,9 +15,6 @@ from ._result import (
     Command,
     Diagnostic,
 )
-
-if TYPE_CHECKING:
-    from ..examples.narration import NarrationStep
 
 
 def emit_json(result: CliResult) -> None:
@@ -45,8 +41,6 @@ def emit_human(result: CliResult, console: Console) -> None:
         _human_init(result, console)
     elif command == Command.SCHEMA:
         _human_schema(result, console)
-    elif command == Command.EXAMPLE:
-        _human_example(result, console)
     else:  # pragma: no cover - unknown commands never reach here
         raise ValueError(f"emit_human does not handle {command}")
 
@@ -185,75 +179,8 @@ def render_resolve_error(exc: ResolveError, console: Console) -> None:
     console.print(Panel(f"[red]Error:[/red] {escape(str(exc))}", style="red"))
 
 
-def _human_example(result: CliResult, console: Console) -> None:
-    if not result.success:
-        _render_error_panels(result.errors, console)
-        return
-    toml_art = next(a for a in result.artifacts if a.path.endswith(".toml"))
-    project_dir = Path(toml_art.path).parent
-    name = Path(toml_art.path).stem
-    executor_art = next(
-        (a for a in result.artifacts if a.kind is ArtifactKind.EXECUTOR), None
-    )
-    executor = (
-        Path(executor_art.path).name
-        if executor_art
-        else f"execute_{name.capitalize()}.py"
-    )
-    files = _file_lines(
-        str(Path(a.path).relative_to(project_dir)) for a in result.artifacts
-    )
-    console.print(
-        Panel(
-            f"[green]Created[/green] '{name}' example in "
-            f"[bold]{project_dir}[/bold]\n\n{files}\n\n"
-            f"[dim]Next:[/dim] uv run {project_dir.as_posix()}/{executor}",
-            title="gantry example",
-            style="green",
-        )
-    )
-
-
 def render_warnings(warnings: list[Diagnostic], console: Console) -> None:
     if not warnings:
         return
     warning_text = "\n".join(f"• {escape(w.message)}" for w in warnings)
     console.print(Panel(warning_text, title="Warnings", border_style="yellow"))
-
-
-def _narration_panel(step: NarrationStep) -> Panel:
-    body = step.body
-    if step.command:
-        body += f"\n\n[cyan]$ {step.command}[/cyan]"
-    if step.artifacts:
-        body += f"\n\nFiles:\n{_file_lines(step.artifacts)}"
-    return Panel(body, title=f"[bold cyan]{step.title}[/bold cyan]")
-
-
-def live_header(command: str, console: Console) -> None:
-    """Print a header rule introducing live subprocess output."""
-    console.rule(f"[cyan]$ {command}[/cyan]")
-
-
-def render_file_snippet(
-    path: Path,
-    lexer: str,
-    console: Console,
-    lines: int = 15,
-    *,
-    title: str | None = None,
-) -> None:
-    """Show the first ``lines`` lines of a file, syntax-highlighted.
-
-    When *title* is supplied a pair of rules bracket the output so the reader
-    can clearly see where the snippet starts and ends.
-    """
-    from rich.syntax import Syntax
-
-    text = path.read_text(encoding="utf-8")
-    head = "\n".join(text.splitlines()[:lines])
-    syntax = Syntax(head, lexer, theme="ansi_dark", line_numbers=False)
-    if title is not None:
-        console.print(Panel(syntax, title=f"[dim]{title}[/dim]"))
-    else:
-        console.print(syntax)

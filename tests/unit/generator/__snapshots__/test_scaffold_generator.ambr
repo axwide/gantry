@@ -2,7 +2,7 @@
 # name: test_generate_disciplines[Drag]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Drag_base import DragBase
   from generated.lib.Drag_io import (
@@ -12,7 +12,7 @@
   
   
   class Drag(DragBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = DragInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -40,7 +40,7 @@
 # name: test_generate_disciplines[Link]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Link_base import LinkBase
   from generated.lib.Link_io import (
@@ -50,7 +50,7 @@
   
   
   class Link(LinkBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = LinkInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -82,7 +82,7 @@
 # name: test_generate_disciplines[Mass]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Mass_base import MassBase
   from generated.lib.Mass_io import (
@@ -92,7 +92,7 @@
   
   
   class Mass(MassBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = MassInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -118,7 +118,7 @@
 # name: test_generate_disciplines[Power]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Power_base import PowerBase
   from generated.lib.Power_io import (
@@ -128,7 +128,7 @@
   
   
   class Power(PowerBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = PowerInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -159,7 +159,7 @@
 # name: test_generate_disciplines_runnable[Drag]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Drag_base import DragBase
   from generated.lib.Drag_io import (
@@ -169,7 +169,7 @@
   
   
   class Drag(DragBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = DragInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -196,7 +196,7 @@
 # name: test_generate_disciplines_runnable[Link]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Link_base import LinkBase
   from generated.lib.Link_io import (
@@ -206,7 +206,7 @@
   
   
   class Link(LinkBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = LinkInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -237,7 +237,7 @@
 # name: test_generate_disciplines_runnable[Mass]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Mass_base import MassBase
   from generated.lib.Mass_io import (
@@ -247,7 +247,7 @@
   
   
   class Mass(MassBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = MassInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -272,7 +272,7 @@
 # name: test_generate_disciplines_runnable[Power]
   '''
   import numpy as np
-  from gemseo.typing import StrKeyMapping
+  from gemseo.util.typing import StrKeyMapping
   
   from generated.lib.Power_base import PowerBase
   from generated.lib.Power_io import (
@@ -282,7 +282,7 @@
   
   
   class Power(PowerBase):
-      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping | None:
+      def _run(self, input_data: StrKeyMapping) -> StrKeyMapping:
           inputs = PowerInputs.from_dict(input_data)
   
           # -------------------- Start of your analysis computation -------------------- #
@@ -314,8 +314,8 @@
   # ruff: noqa: N999
   from pathlib import Path
   
-  from gemseo.formulations.mdf_settings import MDF_Settings
-  from gemseo.settings.opt import SLSQP_Settings
+  from gemseo.formulation import MDF_Settings
+  from gemseo.optimization import SLSQP_Settings
   
   from disciplines.Drag_scaffold import Drag
   from disciplines.Link_scaffold import Link
@@ -346,7 +346,7 @@
   
   def main() -> None:
       scenario = execute_Vleo()
-      scenario.save_optimization_history(Path(__file__).parent / "Vleo.h5")
+      scenario.to_hdf(Path(__file__).parent / "Vleo.h5")
   
   
   if __name__ == "__main__":
@@ -359,7 +359,7 @@
   # ruff: noqa: N999
   from pathlib import Path
   
-  from gemseo.algos.optimization_problem import OptimizationProblem
+  from gemseo.optimization import OptimizationProblem
   
   problem = OptimizationProblem.from_hdf(Path(__file__).parent / "Vleo.h5")
   dataset = problem.to_dataset()
@@ -368,7 +368,7 @@
   print("Objective:          ", meta.objective_name)
   print("Optimum iteration:  ", meta.optimum_iteration)
   print("Feasible iterations:", meta.feasible_iterations)
-  print("Constraints:        ", meta.output_names_to_constraint_names)
+  print("Constraints:        ", meta.output_name_to_constraint_names)
   print("Solution:           ", problem.solution)
   print()
   print(dataset)

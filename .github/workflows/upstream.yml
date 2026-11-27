@@ -17,9 +17,12 @@ permissions:
 jobs:
   # Install the wheel exactly as a user would and drive the CLI. This resolves
   # without the dev group and lets uv choose the interpreter from
-  # `requires-python`. Then run the generated examples the
-  # way the README says, in their own project with uncapped GEMSEO, so a new
-  # GEMSEO release that breaks generated code shows up here.
+  # `requires-python`. Then run the generated code the way the README says, in
+  # its own project with the newest GEMSEO 7, so a new GEMSEO release that
+  # breaks generated code shows up here. While gantry pins an exact GEMSEO
+  # release candidate, the install step can't see anything newer, but the
+  # generated project's `>=7.0.0rc0` (a prerelease specifier, so uv allows
+  # prereleases) picks up later release candidates and 7.0.0 itself.
   tool-install:
     runs-on: ubuntu-latest
     steps:
@@ -30,24 +33,32 @@ jobs:
       - run: uv build --wheel
       - run: uv tool install dist/*.whl
       - run: uv tool list --show-paths
-      - name: Smoke-test the CLI
+      # Two test fixtures that the end-to-end pytest also runs: a bilevel problem
+      # with nested scenarios (sobieski) and a single-level MDF one (vleo).
+      - name: Generate the fixture projects
         working-directory: ${{ runner.temp }}
         run: |
-          gantry example sellar --json | jq -e .success
-          gantry example sobieski --json | jq -e .success
-          gantry validate --json sobieski/sobieski.toml | jq -e .success
-      # Follows "Running the generated code" in the README. Exit codes only;
-      # pytest checks the optimum values.
-      - name: Run the generated examples
-        working-directory: ${{ runner.temp }}
-        run: |
-          for example in sellar sobieski; do
+          for fixture in sobieski vleo; do
             (
-              cd "$example"
+              mkdir "$fixture" && cd "$fixture"
+              cp "$GITHUB_WORKSPACE/tests/fixtures/$fixture.toml" .
+              gantry validate --json "$fixture.toml" | jq -e .success
+              gantry build --json "$fixture.toml" | jq -e .success
+              gantry scaffold --runnable --json "$fixture.toml" | jq -e .success
+            )
+          done
+      # Follows "Running the generated code" in the README. The stubs return
+      # placeholder outputs, so this checks that generated code runs on GEMSEO,
+      # not the numbers.
+      - name: Run the generated code
+        working-directory: ${{ runner.temp }}
+        run: |
+          for fixture in sobieski vleo; do
+            (
+              cd "$fixture"
               uv init --bare
-              uv add "gemseo>=6.3"
+              uv add "gemseo>=7.0.0rc0,<8"
               uv pip list | grep -i '^gemseo '
-              uv run execute_*.py
-              uv run postprocess.py
+              for script in execute_*.py load_*.py; do uv run "$script"; done
             )
           done

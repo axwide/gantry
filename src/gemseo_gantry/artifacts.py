@@ -18,8 +18,6 @@ class ArtifactKind(StrEnum):
     DIAGRAM = "diagram"
     PROBLEM_DEFINITION = "problem_definition"
     SCHEMA = "schema"
-    EXAMPLE = "example"
-    DISCIPLINE = "discipline"
     POSTPROCESSOR = "postprocessor"
 
 

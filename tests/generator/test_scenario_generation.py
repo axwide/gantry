@@ -52,7 +52,7 @@ def test_root_scenario_emits_subscenarios_dataclass(tmp_path: Path):
     generate_scenario(_problem(), tmp_path)
     root_src = (tmp_path / "Root.py").read_text()
     assert "class RootSubScenarios:" in root_src
-    assert "Sub: BaseScenario" in root_src
+    assert "Sub: MDOScenario" in root_src
     assert "sub_scenarios: RootSubScenarios" in root_src
     # plain disciplines are instances, not classes
     assert "DiscB: Discipline" in root_src
@@ -64,6 +64,6 @@ def test_root_scenario_emits_subscenarios_dataclass(tmp_path: Path):
 def test_leaf_scenario_has_no_subscenarios(tmp_path: Path):
     generate_scenario(_problem(), tmp_path)
     sub_src = (tmp_path / "Sub.py").read_text()
-    assert "SubScenarios" not in sub_src.replace("BaseScenario", "")
+    assert "SubScenarios" not in sub_src.replace("MDOScenario", "")
     assert "DiscA: Discipline" in sub_src
     assert "disciplines.DiscA," in sub_src
