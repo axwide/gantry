@@ -33,21 +33,32 @@ jobs:
       - run: uv build --wheel
       - run: uv tool install dist/*.whl
       - run: uv tool list --show-paths
-      - name: Generate the starter project
+      # Two test fixtures that the end-to-end pytest also runs: a bilevel problem
+      # with nested scenarios (sobieski) and a single-level MDF one (vleo).
+      - name: Generate the fixture projects
         working-directory: ${{ runner.temp }}
         run: |
-          mkdir starter && cd starter
-          gantry init --json | jq -e .success
-          gantry validate --json | jq -e .success
-          gantry build --json | jq -e .success
-          gantry scaffold --runnable --json | jq -e .success
+          for fixture in sobieski vleo; do
+            (
+              mkdir "$fixture" && cd "$fixture"
+              cp "$GITHUB_WORKSPACE/tests/fixtures/$fixture.toml" .
+              gantry validate --json "$fixture.toml" | jq -e .success
+              gantry build --json "$fixture.toml" | jq -e .success
+              gantry scaffold --runnable --json "$fixture.toml" | jq -e .success
+            )
+          done
       # Follows "Running the generated code" in the README. The stubs return
       # placeholder outputs, so this checks that generated code runs on GEMSEO,
       # not the numbers.
       - name: Run the generated code
-        working-directory: ${{ runner.temp }}/starter
+        working-directory: ${{ runner.temp }}
         run: |
-          uv init --bare
-          uv add "gemseo>=7.0.0rc0,<8"
-          uv pip list | grep -i '^gemseo '
-          for script in execute_*.py load_*.py; do uv run "$script"; done
+          for fixture in sobieski vleo; do
+            (
+              cd "$fixture"
+              uv init --bare
+              uv add "gemseo>=7.0.0rc0,<8"
+              uv pip list | grep -i '^gemseo '
+              for script in execute_*.py load_*.py; do uv run "$script"; done
+            )
+          done
