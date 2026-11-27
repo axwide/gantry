@@ -147,7 +147,7 @@ def test_design_space_property():
     assert ds[0]["lower_bound"] == 0.0
     assert ds[0]["upper_bound"] == 10.0
     assert ds[0]["value"] == 5.0
-    assert ds[0]["type"] == "float"
+    assert ds[0]["type"] == "real"
 
 
 def test_design_space_property_maps_missing_bounds_to_infinity():
@@ -403,7 +403,7 @@ def test_design_space_emits_one_row_per_element_for_vector_variable():
     assert [r["lower_bound"] for r in rows] == [0.0, 1.0, 2.0]
     assert [r["value"] for r in rows] == [1.0, 2.0, 3.0]
     assert [r["upper_bound"] for r in rows] == [10.0, 11.0, 12.0]
-    assert all(r["type"] == "float" for r in rows)
+    assert all(r["type"] == "real" for r in rows)
 
 
 def test_design_space_scalar_variable_emits_one_row():
@@ -429,7 +429,7 @@ def test_design_space_scalar_variable_emits_one_row():
             "lower_bound": 0.0,
             "value": 5.0,
             "upper_bound": 10.0,
-            "type": "float",
+            "type": "real",
         }
     ]
 

@@ -20,16 +20,11 @@ def _pascal_to_snake(s: str) -> str:
     return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", s).lower()
 
 
-_FORMULATION_SETTINGS: dict[FormulationType, tuple[str, str]] = {
-    FormulationType.MDF: ("gemseo.formulations.mdf_settings", "MDF_Settings"),
-    FormulationType.BILEVEL: (
-        "gemseo.formulations.bilevel_settings",
-        "BiLevel_Settings",
-    ),
-    FormulationType.BILEVEL_BCD: (
-        "gemseo.formulations.bilevel_bcd_settings",
-        "BiLevel_BCD_Settings",
-    ),
+# Settings classes of the formulations, all importable from `gemseo.formulation`.
+_FORMULATION_SETTINGS: dict[FormulationType, str] = {
+    FormulationType.MDF: "MDF_Settings",
+    FormulationType.BILEVEL: "BiLevel_Settings",
+    FormulationType.BILEVEL_BCD: "BiLevelBCD_Settings",
 }
 
 
@@ -253,11 +248,12 @@ def generate_scenario_executor(
         ordered = problem.construction_order(root)
         scenarios_ctx = []
         plain_disc_names: list[str] = []
-        formulation_imports: dict[str, str] = {}
+        formulation_imports: list[str] = []
         for scenario in ordered:
             formulation = problem.resolve_formulation(scenario)
-            module, cls = _FORMULATION_SETTINGS[formulation]
-            formulation_imports[cls] = module
+            cls = _FORMULATION_SETTINGS[formulation]
+            if cls not in formulation_imports:
+                formulation_imports.append(cls)
             plain = sorted(problem.plain_discipline_names_of(scenario))
             for name in plain:
                 if name not in plain_disc_names:
@@ -285,10 +281,7 @@ def generate_scenario_executor(
             disciplines=sorted(plain_disc_names),
             lib_package=lib_package,
             discipline_package=discipline_package,
-            formulation_imports=[
-                {"cls": cls, "module": module}
-                for cls, module in formulation_imports.items()
-            ],
+            formulation_imports=formulation_imports,
         )
         first_party = first_party_roots(lib_package) | first_party_roots(
             discipline_package,

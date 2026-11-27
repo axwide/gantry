@@ -17,6 +17,13 @@ class DataType(StrEnum):
     INTEGER = "integer"
 
 
+# GEMSEO's name for each data type in a design space file.
+_DESIGN_SPACE_TYPES: dict[DataType, str] = {
+    DataType.FLOAT: "real",
+    DataType.INTEGER: "integer",
+}
+
+
 class FormulationType(StrEnum):
     MDF = "MDF"
     IDF = "IDF"
@@ -157,7 +164,7 @@ class ProblemDefinition(BaseModel):
                         "lower_bound": lower,
                         "value": value,
                         "upper_bound": upper,
-                        "type": var.data_type,
+                        "type": _DESIGN_SPACE_TYPES[var.data_type],
                     }
                 )
         return rows

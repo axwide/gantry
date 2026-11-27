@@ -23,7 +23,7 @@ dependencies = [
     "pandas>=2.3.2",
     "pydantic>=2.11.9",
     "python-slugify>=9.1.3",
-    "gemseo>=6.3.0,<7",
+    "gemseo==7.0.0rc0",
     "typer>=0.16.0",
     "rich>=13.0.0",
     "watchfiles>=0.21",
@@ -59,6 +59,13 @@ build-backend = "uv_build"
 addopts = ["--snapshot-warn-unused", "--import-mode=importlib", "--cov=src/gemseo_gantry", "--cov-fail-under=90"]
 filterwarnings = [
     "ignore::DeprecationWarning",
+    # Except GEMSEO's: a deprecated GEMSEO name still resolves in GEMSEO 7 but is
+    # removed in GEMSEO 8. Fail on it in gantry, GEMSEO internals and generated code
+    # (imported as `lib`, `disciplines` and `execute_*`). Later filters win.
+    "error::DeprecationWarning:gemseo",
+    "error::DeprecationWarning:lib",
+    "error::DeprecationWarning:disciplines",
+    "error::DeprecationWarning:execute_",
 ]
 pythonpath = ["src"]
 markers = [
@@ -69,10 +76,6 @@ markers = [
 source = ["src/gemseo_gantry"]
 omit = [
     "src/gemseo_gantry/generator/templates/*",
-    "src/gemseo_gantry/examples/*/disciplines/*",
-    "src/gemseo_gantry/examples/*/scenarios/*",
-    "src/gemseo_gantry/examples/*/postprocess.py",
-    "src/gemseo_gantry/examples/*/execute_*.py",
 ]
 
 [tool.coverage.report]
@@ -84,14 +87,3 @@ exclude_lines = [
 [tool.ruff.lint]
 # Flag Unicode characters easily confused with ASCII (en dash, minus sign, ...).
 extend-select = ["RUF001", "RUF002", "RUF003"]
-
-[tool.ruff.lint.per-file-ignores]
-# Example modules are named after their GEMSEO disciplines and scenarios, the
-# same way generated projects are.
-"src/gemseo_gantry/examples/**" = ["N999"]
-
-[tool.ruff.lint.isort]
-# The example projects import their generated `lib` and their `disciplines`
-# package as first-party code, which is how ruff sees them once copied into a
-# user's project. Nothing in gantry itself has a top-level module by either name.
-known-first-party = ["lib", "disciplines"]

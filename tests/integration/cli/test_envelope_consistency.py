@@ -22,7 +22,6 @@ SUCCESS_INVOCATIONS = [
     ["diagram", "n2", "problem.toml"],
     ["diagram", "xdsm", "problem.toml"],
     ["schema", "--force"],
-    ["example", "sellar"],
 ]
 
 

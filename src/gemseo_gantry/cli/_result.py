@@ -33,7 +33,6 @@ class Command(StrEnum):
     SCAFFOLD = "scaffold"
     DIAGRAM = "diagram"
     SCHEMA = "schema"
-    EXAMPLE = "example"
 
 
 class Artifact(BaseModel):

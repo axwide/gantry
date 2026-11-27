@@ -3,7 +3,7 @@
 [![CI](https://github.com/axwide/gantry/actions/workflows/ci.yml/badge.svg)](https://github.com/axwide/gantry/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/gemseo-gantry)](https://pypi.org/project/gemseo-gantry/)
 [![Python](https://img.shields.io/pypi/pyversions/gemseo-gantry)](https://pypi.org/project/gemseo-gantry/)
-[![GEMSEO](https://img.shields.io/badge/GEMSEO-%E2%89%A5%206.3-blue)](https://gemseo.readthedocs.io/)
+[![GEMSEO](https://img.shields.io/badge/GEMSEO-%E2%89%A5%207.0.0rc0-blue)](https://gemseo.readthedocs.io/)
 [![License](https://img.shields.io/github/license/axwide/gantry)](https://github.com/axwide/gantry/blob/main/LICENSE)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -35,14 +35,6 @@ This puts the `gantry` command on your path.
 
 ## Quickstart
 
-To see the whole pipeline, generate the Sellar example. It's a classic benchmark, and you get a complete project you can run:
-
-```bash
-gantry example sellar      # add --explain to narrate each stage
-```
-
-Or start your own problem:
-
 ```bash
 gantry init                # 1. write a starter problem.toml (plus its JSON Schema)
 gantry validate --watch    # 2. edit problem.toml with live feedback (q/Esc to stop)
@@ -69,11 +61,11 @@ class Drag(DragBase):
 `gantry` writes files. It doesn't run your analysis. The generated `execute_<Scenario>.py` and your disciplines are plain Python that import GEMSEO, so run them in a project that has GEMSEO and whatever else your physics code needs:
 
 ```bash
-uv add "gemseo>=6.3"
+uv add "gemseo>=7.0.0rc0"
 uv run execute_<Scenario>.py
 ```
 
-You manage that environment yourself, and it's separate from the one `gantry` is installed in. The generated code needs GEMSEO 6.3 or later, not the exact version `gantry` happens to use.
+You manage that environment yourself, and it's separate from the one `gantry` is installed in. The generated code needs GEMSEO 7 (for now the 7.0.0rc0 release candidate) or later, not the exact version `gantry` happens to use.
 
 ## How it works
 

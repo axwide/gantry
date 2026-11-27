@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Any
 
 from gemseo import create_scenario
-from gemseo.algos.design_space import DesignSpace
-from gemseo.core.discipline import Discipline
-from gemseo.formulations.base_formulation_settings import BaseFormulationSettings
-from gemseo.scenarios.base_scenario import BaseScenario
+from gemseo.discipline import Discipline
+from gemseo.formulation.core.base_settings import BaseFormulationSettings
+from gemseo.scenario import MDOScenario
+from gemseo.space import DesignSpace
 
 from .variables import Var
 
@@ -27,7 +27,7 @@ class {{ scenario_name }}Disciplines:
 @dataclass
 class {{ scenario_name }}SubScenarios:
 {%- for sub in sub_scenarios %}
-    {{ sub }}: BaseScenario
+    {{ sub }}: MDOScenario
 {%- endfor %}
 
 {% endif %}
@@ -40,7 +40,7 @@ def construct_{{ scenario_name }}(
     design_space_path: Path = DESIGN_SPACE_PATH,
     formulation_settings_model: BaseFormulationSettings | None = None,
     **formulation_settings: Any,
-) -> BaseScenario:
+) -> MDOScenario:
     # ------------------------ from the ProblemFormulation ----------------------- #
     scenario_name = "{{ scenario_name }}"
     scenario_type = "{{ scenario_type }}"
@@ -71,7 +71,7 @@ def construct_{{ scenario_name }}(
     ).filter(design_variables, copy=True)
 
     scenario = create_scenario(
-        disciplines=discipline_list,{% if sub_scenarios %}  # pyright: ignore[reportArgumentType]  # BaseScenario is a Discipline subclass at runtime; GEMSEO ships no stubs{% endif %}
+        disciplines=discipline_list,{% if sub_scenarios %}  # pyright: ignore[reportArgumentType]  # the formulation picks the sub-scenarios out of the discipline list at runtime{% endif %}
         objective_name=objective,
         design_space=design_space,
         name=scenario_name,

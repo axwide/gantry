@@ -78,7 +78,7 @@ def test_executor_wires_subscenarios(tmp_path: Path):
     assert ".set_algorithm(" in src
     # root constructed with the sub-scenario instance + BCD settings
     assert "construct_Root(" in src
-    assert "BiLevel_BCD_Settings()" in src
+    assert "BiLevelBCD_Settings()" in src
     assert "RootSubScenarios(" in src
     # only the root is executed
     assert ".execute(" in src

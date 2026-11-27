@@ -2,7 +2,6 @@ import typer
 
 from .build import build
 from .diagram import diagram_app
-from .example import example
 from .init import init
 from .scaffold import scaffold
 from .schema import schema
@@ -17,7 +16,6 @@ app = typer.Typer(
 app.command("init")(init)
 app.command("build")(build)
 app.command("scaffold")(scaffold)
-app.command("example")(example)
 app.command("schema")(schema)
 app.command("validate")(validate)
 app.add_typer(
